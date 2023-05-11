@@ -26,9 +26,24 @@ export class RoutingComponents {
   UserLogin(req,res,next){
     this.userController.userLogin(req,res)
   }
+
+  UpdateUser(req,res,next){
+    this.userController.updateUser(req,res)
+  }
+
+  UserInfo(req, res, next) {
+    this.userController.userInfo(req, res);
+  }
+
+  DeleteUser(req, res, next) {
+    this.userController.deleteUser(req, res);
+  }
   
 
   AllUserDetails(req,res){
     this.userController.allUserDetails(req, res);
+  }
+  ForgotPassword(req,res){
+    this.userController.userForgotpassword(req,res);
   }
 }

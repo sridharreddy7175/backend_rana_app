@@ -3,6 +3,11 @@ import { UserModel } from '../models/user-model';
 import { ResponseInterceptor } from "../utillities/response-interceptor";
 import * as bcrypt from "bcryptjs";
 import * as mongoose from 'mongoose';
+// import * as crypto from 'node:crypto';
+import * as jwt from 'jsonwebtoken';
+import { appConfig } from "../../config/appConfig";
+
+import { transporter } from '../utillities/mailer';
 
 
 
@@ -20,7 +25,6 @@ export class UserController {
   }
 
   async createUser(req, res): Promise<void> {
-    // console.log("sridhar",req)
     try {
         const userData: any = req.body;
         if (!userData.name) {
@@ -53,7 +57,8 @@ export class UserController {
             phone:userData.phone
         });
         saveduser = await saveduser.save();
-        this.responseInterceptor.successResponse(res, 200, 'Registration is Success', saveduser);  
+        return this.responseInterceptor.successResponse(req, res, null, 'Successfully Created', { user_id: saveduser._id });
+
     } catch (err) {
        return this.responseInterceptor.errorResponse(res, 400, 'Server error', err);
     }
@@ -76,17 +81,16 @@ async userLogin(req,res){
 
          if (isPasswordCompared) {
           let token = await this.authGuard.generateAuthToken({
-              "id": userCredentials.id,
+              "id": userCredentials._id,
               "email": userCredentials.email,
           });
-          console.log("sridharreddy",token)
-          let apiResponse:any = { ...token }
-          this.responseInterceptor.successResponse(res, 200, 'token generated', apiResponse);  
+          return this.responseInterceptor.successResponse(req, res, 200, 'token generated', token);
+
         }  
 
     }
     catch(err){
-      return this.responseInterceptor.errorResponse(res, 500, "db operation failed",'');
+      return this.responseInterceptor.errorResponse(res, 500, "db operation failed",err);
     }
     
   }
@@ -109,7 +113,8 @@ if (req.query.pageno) {
     currentOffset = pageLimit * (req.query.pageno - 1)
 }
  const result=await this.userModel.find().limit(pageLimit).skip(currentOffset)
- this.responseInterceptor.successResponse(res, 200, 'Data found', result);  
+return this.responseInterceptor.successResponse(req, res, 200, 'Data found', result);
+
 
    
    }
@@ -122,15 +127,11 @@ if (req.query.pageno) {
   }
 
   async updateUser(req,res){
-    // 
-    // if(!userData._id){
-
-    // }
     try{
       let userData = req.body;
-      if (req.body.user_id) {
+      if (req.body._id) {
      //checking the existance user
-     let userCredentials = await this.userModel.findOne({  id: userData._id  })
+     let userCredentials = await this.userModel.findOne({  _id: userData._id  })
      if (!userCredentials) {
          return this.responseInterceptor.errorResponse(res, 400,'User does not exists');
      }
@@ -138,7 +139,11 @@ if (req.query.pageno) {
       _id: new mongoose.Types.ObjectId(userData._id)
   }
      this.userModel.updateOne(query,userData).then(data=>{
-      
+      return this.responseInterceptor.sendSuccess(res, "Success fully updated.");
+
+     }).catch(err=>{
+      this.responseInterceptor.errorResponse(res, 400, 'db operation failed', err);  
+
      })
     }
     else{
@@ -151,4 +156,92 @@ if (req.query.pageno) {
     }
 
   }
+
+
+  async userForgotpassword(req,res){
+    try {
+      let {email,id}=req.body;
+      let user=await this.userModel.findOne({email:email});
+      if(!user){
+        return this.responseInterceptor.errorResponse(res,404,"User not found",'')
+      }
+
+        // token generate for reset password
+        const token = jwt.sign({_id:user._id},appConfig.session_token,{
+          expiresIn:"120s"
+      });
+      if(token){
+        const mailOptions = {
+            from:'help@ums.dev',
+            to:email,
+            subject:"Sending Email For password Reset",
+            text:`This Link Valid For 2 MINUTES http://localhost:3001/forgotpassword/${user.id}/${token}`
+        }
+        transporter.sendMail(mailOptions,(error,info)=>{
+            if(error){
+                console.log("error",error);
+                this.responseInterceptor.errorResponse(res, 400, 'email not send', error);  
+            }else{
+                console.log("Email sent",info.response);
+                return this.responseInterceptor.sendSuccess(res, "Email sent Succsfully");
+
+            }
+        })
+
+    }
+
+    }
+    catch(err){
+      return this.responseInterceptor.errorResponse(res, 500, 'Something went wrong', err);
+
+    }
+    
+  }
+
+  async userInfo(req,res){
+    try {
+      let email = req.body.email;
+      let users= await this.userModel.findOne({ email: email  });
+      if (!users) {
+        return this.responseInterceptor.errorResponse(res,404,"Invalid Credentials",'')
+      }
+      let currentUserData = {
+          id: users._id,
+          name: users.name,
+          email: users.email,
+          password_changed: users.password,
+          phone: users.phone
+      }
+      return this.responseInterceptor.successResponse(req, res, null, "Data found", currentUserData)
+  } catch (error) {
+    return this.responseInterceptor.errorResponse(res, 500, 'Something went wrong', error);
+  }
+  }
+  async deleteUser(req,res){
+    try {
+      const deleteUserData = req.params.id;
+      if (!deleteUserData) {
+          this.responseInterceptor.errorResponse(res, 400, '_id is Required', '');
+          return;
+      }
+      const deleteObject = {
+          _id: new mongoose.Types.ObjectId(deleteUserData)
+      };
+      const response = await this.userModel.deleteOne(deleteObject);
+      if (response) {
+        return this.responseInterceptor.sendSuccess(res, "User Removed successfully");
+      } else {
+          this.responseInterceptor.errorResponse(res, 400, 'Failed to remove the user', response);
+          return;
+      }
+  } catch (err) {
+      this.responseInterceptor.errorResponse(res, 400, 'Failed to remove the user', err);
+      return;
+  }
+  }
+
+  
+
+
+
 }
