@@ -28,7 +28,7 @@ export class ResponseInterceptor {
     // return res.status(this.RESPONSE_SUCCESS).send(responseData);
   }
 
-  public async sendSuccess(res, message?:string, data?:any) {
+  public async sendSuccess(res, message?:any, data?:any) {
 
     let responseData = {
         status: 'success',

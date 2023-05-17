@@ -61,7 +61,6 @@ export class AppRoutes {
         path: "/forgot/password",
         component: [routingComponents.ForgotPassword.bind(routingComponents)],
       },
-
       {
         path: "/user/info",
         component: [
@@ -69,6 +68,17 @@ export class AppRoutes {
           routingComponents.UserInfo.bind(routingComponents),
         ],
       },
+   
+      // CreateMovie
+      {
+        path: "/create/movie",
+        component: [
+          // this.authGuard.authCheck.bind(this.authGuard),
+          // this.validator.validateBodyPayload.bind(this.validator, userSchema),
+          routingComponents.CreateMovie.bind(routingComponents),
+        ],
+      },
+    
     ];
     /**
      * Put calls
@@ -79,6 +89,20 @@ export class AppRoutes {
         component: [
           this.authGuard.authCheck.bind(this.authGuard), //Auth Check
           routingComponents.UpdateUser.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/follow",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard),
+          routingComponents.Follow.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/unfollow",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard),
+          routingComponents.UnFollow.bind(routingComponents),
         ],
       },
     ];
