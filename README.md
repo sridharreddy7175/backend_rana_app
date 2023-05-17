@@ -10,6 +10,6 @@ Rana App website built with the MERN stack with React Context API for state mana
 
 ## Run the Express server only
 
-## node app.ts
+## npm run dev
 
-## Server runs on http://localhost:8831 
+## Server runs on http://localhost:8850 
