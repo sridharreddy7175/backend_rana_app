@@ -2,6 +2,8 @@ import { RoutingComponents } from "./routing-components";
 import { AuthGuard } from "../core/utillities/auth-gaurd/auth-gaurd";
 import { Validator } from "../core/utillities/validator/validator";
 import { userSchema } from "./payload_schems/user-schemas";
+import * as multer from 'multer';
+// import {storage} from '../../app/core/utillities/imageupload'
 
 export class AppRoutes {
   AppGetRoutes: any[];
@@ -15,6 +17,7 @@ export class AppRoutes {
     const routingComponents: RoutingComponents = new RoutingComponents();
     this.authGuard = new AuthGuard();
     this.validator = new Validator();
+    const upload = multer({ dest: '../files/' })  
 
     /**
      * GET Data APIs list
@@ -75,6 +78,7 @@ export class AppRoutes {
         component: [
           // this.authGuard.authCheck.bind(this.authGuard),
           // this.validator.validateBodyPayload.bind(this.validator, userSchema),
+          upload.single('poster'),
           routingComponents.CreateMovie.bind(routingComponents),
         ],
       },

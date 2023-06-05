@@ -26,59 +26,60 @@ const movieSchema: Schema = new Schema(
   {
     title: {
       type: String,
-      required: true,
+      // required: true,
     },
-    views: {
-      type: String,
+    numViews: {
+      type: Number,
+      default: 0,
     },
     storyLine: {
       type: String,
-      required: true,
+      // required: true,
     },
     director: {
       type: String,
-      required: true,
+      // required: true,
     },
     type: {
       type: String,
-      required: true,
+      // required: true,
     },
     releseDate: {
       type: Date,
-      required: true,
+      // required: true,
     },
     genres: {
       type: [String],
-      required: true,
+      // required: true,
       enum: genres,
     },
     tags: {
       type: Array,
-      required:true
+      // required:true
     },
     cast:{
       type:Array,
-      required:true
+      // required:true
     },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     poster: {
       type: String,
-      required: true,
+      // required: true,
     },
     trailer: {
       type: String,
-      required: true,
+      // required: true,
     },
     video: {
       type: String,
     },
     imbRating: {
       type: String,
-      required: true,
+      // required: true,
     },
     language: {
       type: String,
-      required: true,
+      // required: true,
     },
   },
   { timestamps: true }

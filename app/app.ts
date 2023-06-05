@@ -27,7 +27,7 @@ class App {
     this.loadAndConfig();
     this.app.listen(this.PORT, () => {
       console.log(
-        `[server]: Server is running at https://localhost:${this.PORT}`
+        `[server]: Server is running at http://localhost:${this.PORT}`
       );
     });
   }

@@ -6,7 +6,7 @@ info:
   
 
 servers:
-  - url: http://localhost:8081/
+  - url: http://localhost:8850/
     description:  Local server 
   - url: https://prod.com/
     description:  Pre Production server
@@ -51,7 +51,7 @@ paths:
   
 
   paths:
-  /users/list:
+  /createUser:
     post:
       tags:
         - Create User API 
