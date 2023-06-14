@@ -8,8 +8,8 @@ interface IUser extends Document {
   password: string;
   accountType: boolean;
   phone: string;
-  isFollowing:string;
-  isUnFollowing:string;
+  isFollowing: string;
+  isUnFollowing: string;
 }
 
 const userSchema: Schema = new Schema(
@@ -45,8 +45,22 @@ const userSchema: Schema = new Schema(
     },
     followers: [{ type: ObjectId, ref: "UserModel" }],
     following: [{ type: ObjectId, ref: "UserModel" }],
+    tokens: [
+      {
+          token: {
+              type: String,
+              required: true,
+          }
+      }
+  ],
+
+    verifytoken: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
 
 export const UserModel = model<IUser>("UserModel", userSchema);
+
+

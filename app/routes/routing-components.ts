@@ -1,15 +1,20 @@
 import { ResponseInterceptor } from "../core/utillities/response-interceptor";
 import { UserController } from "../core/controllers/user-controller";
 import { MovieController } from "../core/controllers/movie-controller";
+import { ForgotPasswordController } from "../core/controllers/forgotPassword-controller";
+
 
 export class RoutingComponents {
   public responseInterceptor: ResponseInterceptor;
   userController: UserController;
   movieController: MovieController;
+  forgotPasswordController:ForgotPasswordController;
+
   constructor() {
     this.responseInterceptor = new ResponseInterceptor();
     this.userController = new UserController();
     this.movieController = new MovieController();
+    this.forgotPasswordController=new ForgotPasswordController();
   }
   /**
    *  page not found.
@@ -46,7 +51,10 @@ export class RoutingComponents {
     this.userController.allUserDetails(req, res);
   }
   ForgotPassword(req, res) {
-    this.userController.userForgotpassword(req, res);
+    this.forgotPasswordController.userForgotpassword(req, res);
+  }
+  resetPassword(req,res){
+    this.forgotPasswordController.resetPassword(req,res)
   }
   Follow(req, res) {
     this.userController.follow(req, res);

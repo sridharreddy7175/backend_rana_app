@@ -6,8 +6,10 @@ import * as mongoose from "mongoose";
 // import * as crypto from 'node:crypto';
 import * as jwt from "jsonwebtoken";
 import { appConfig } from "../../config/appConfig";
+const sgMail = require("@sendgrid/mail");
+// sgMail.setApiKey(appConfig.apikey);
 
-import { transporter } from "../utillities/mailer";
+import { sendEmail } from "../utillities/mailer";
 
 export class UserController {
   userModel: typeof UserModel;
@@ -238,57 +240,7 @@ export class UserController {
     }
   }
 
-  async userForgotpassword(req, res) {
-    try {
-      let { email, id } = req.body;
-      let user = await this.userModel.findOne({ email: email });
-      if (!user) {
-        return this.responseInterceptor.errorResponse(
-          res,
-          404,
-          "User not found",
-          ""
-        );
-      }
-
-      // token generate for reset password
-      const token = jwt.sign({ _id: user._id }, appConfig.session_token, {
-        expiresIn: "120s",
-      });
-      if (token) {
-        const mailOptions = {
-          from: "help@ums.dev",
-          to: email,
-          subject: "Sending Email For password Reset",
-          text: `This Link Valid For 2 MINUTES http://localhost:3001/forgotpassword/${user.id}/${token}`,
-        };
-        transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-            console.log("error", error);
-            this.responseInterceptor.errorResponse(
-              res,
-              400,
-              "email not send",
-              error
-            );
-          } else {
-            console.log("Email sent", info.response);
-            return this.responseInterceptor.sendSuccess(
-              res,
-              "Email sent Succsfully"
-            );
-          }
-        });
-      }
-    } catch (err) {
-      return this.responseInterceptor.errorResponse(
-        res,
-        500,
-        "Something went wrong",
-        err
-      );
-    }
-  }
+  
 
   async userInfo(req, res) {
     try {
@@ -411,8 +363,8 @@ export class UserController {
   async unFollow(req, res) {
     try {
       const { unFollowId } = req.body;
-      const loginUserId =req?.user?._conditions?._id;
-      console.log("unFollw")
+      const loginUserId = req?.user?._conditions?._id;
+      console.log("unFollw");
 
       await this.userModel.findByIdAndUpdate(
         unFollowId,
@@ -444,4 +396,5 @@ export class UserController {
       );
     }
   }
+  async PwdResetLink(req, res) {}
 }

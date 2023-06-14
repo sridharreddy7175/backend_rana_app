@@ -30,6 +30,14 @@ export class AppRoutes {
           routingComponents.AllUserDetails.bind(routingComponents),
         ],
       },
+      {
+        path: "/user/pwd-reset-link/:id",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.AllUserDetails.bind(routingComponents),
+        ],
+      },
+      
 
       //  todo remove after data fatech done..
       // 404
@@ -63,6 +71,10 @@ export class AppRoutes {
       {
         path: "/forgot/password",
         component: [routingComponents.ForgotPassword.bind(routingComponents)],
+      },
+      {
+        path: "/reset/password/:token",
+        component: [routingComponents.resetPassword.bind(routingComponents)],
       },
       {
         path: "/user/info",

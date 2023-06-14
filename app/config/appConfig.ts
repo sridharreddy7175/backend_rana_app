@@ -26,5 +26,6 @@ export const appConfig = {
   database: {
     host: DATABASE_URL,
   },
-  "session_token": SESSION_TOKEN
+  "session_token": SESSION_TOKEN,
+  apikey:"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"
 };

@@ -78,7 +78,7 @@ const movieSchema: Schema = new Schema(
       // required: true,
     },
     language: {
-      type: String,
+      type: Array,
       // required: true,
     },
   },

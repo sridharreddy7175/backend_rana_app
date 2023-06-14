@@ -1,10 +1,9 @@
 openapi: 3.0.0
 info:
-  title: Code Improve API
-  description: Optional multiline or single-line description in [CommonMark](http://commonmark.org/help/) or HTML.
+  title: Rana App Api
+  description: It is used to Rana App Api.
   version: 1.0 
   
-
 servers:
   - url: http://localhost:8850/
     description:  Local server 
@@ -18,44 +17,13 @@ servers:
 components:
   securitySchemes:
     ApiTokenss:        # arbitrary name for the security scheme
-          
       type: http
       scheme: bearer
-    
-    ApiKey:        # arbitrary name for the security scheme
-      type: apiKey
-      in: header       # can be "header", "query" or "cookie"
-      name: apikey
-      
 paths:
-  # /users/detail/{userId}:
-  #   get:
-  #     security:
-  #      - ApiTokenss: []
-  #      - ApiKey: []
-  #     summary: Returns a user details by ID.
-  #     parameters:
-  #       - name: userId
-  #         in: path
-  #         required: true
-  #         description: Parameter description in CommonMark or HTML.
-  #         schema:
-  #           # type : integer
-  #           # format: int64
-  #           type: string
-  #           example: "Users String"
-  #           minimum: 1
-  #     responses: 
-  #       '200':
-  #         description: OK
-  
-
-  paths:
   /createUser:
     post:
       tags:
-        - Create User API 
-      summary: Create user api.     
+        - User API   
       post:
       requestBody:
         required: true
@@ -86,19 +54,206 @@ paths:
           description: Server error.
         default:
           description: Unexpected error
-
-paths:
-  /users/list:
+  /userLogin:
     post:
       tags:
-        - Login API 
-      summary: Returns a user list.     
+        - User API    
       post:
       requestBody:
         required: true
         content:
           # multipart/form-data:
            application/json:
+            schema:
+              type: object
+              properties: 
+                email:
+                  type: string
+                  example: "sridhar@gmail.com"
+                password:
+                  type: string 
+                  example: "Sridhar1247@"
+      responses:
+        '200':
+          description: Registration is Success. 
+        '400':
+          description: User Details is Required.
+        '404':
+          description: Server error.
+        default:
+          description: Unexpected error
+    
+  /allUserDetails:
+    get:
+      tags:
+        - User API    
+      responses:
+        '200':
+          description: Registration is Success. 
+        '400':
+          description: User Details is Required.
+        '404':
+          description: Server error.
+        default:
+          description: Unexpected error
+  /updateUser:
+    put:
+      tags:
+        - User API    
+      post:
+      requestBody:
+        required: true
+        content:
+          # multipart/form-data:
+           application/json:
+            schema:
+              type: object
+              properties: 
+                id:
+                  type: string
+                  example: "6451cf1d52a4adebd8a56401"
+                name:
+                  type: string 
+                  example: sridhar
+      responses:
+        '200':
+          description: Registration is Success. 
+        '400':
+          description: User Details is Required.
+        '404':
+          description: Server error.
+        default:
+          description: Unexpected error
+  /forgot/password:
+    post:
+      tags:
+        - User API    
+      post:
+      requestBody:
+        required: true
+        content:
+          # multipart/form-data:
+           application/json:
+            schema:
+              type: object
+              properties: 
+                email:
+                  type: string
+                  example: "sridhar@gmail.com"
+      responses:
+        '200':
+          description: Registration is Success. 
+        '400':
+          description: User Details is Required.
+        '404':
+          description: Server error.
+        default:
+          description: Unexpected error
+  /reset/password/{token}:
+    post:
+      tags:
+        - User API    
+      post:
+      requestBody:
+        required: true
+        content:
+          # multipart/form-data:
+           application/json:
+            schema:
+              type: object
+              properties: 
+                email:
+                  type: string
+                  example: "sridhar@gmail.com"
+      responses:
+        '200':
+          description: Registration is Success. 
+        '400':
+          description: User Details is Required.
+        '404':
+          description: Server error.
+        default:
+          description: Unexpected error
+  /delete/user/{userId}:
+    delete:
+      tags:
+        - User API 
+    parameters:
+    - in: path
+      name: userId
+      required: true
+      schema:
+        type: integer       
+      responses:
+        '200':
+          description: Registration is Success. 
+        '400':
+          description: User Details is Required.
+        '404':
+          description: Server error.
+        default:
+          description: Unexpected error
+  /follow:
+    put:
+      tags:
+        - User API    
+      post:
+      requestBody:
+        required: true
+        content:
+          # multipart/form-data:
+           application/json:
+            schema:
+              type: object
+              properties: 
+                followId:
+                  type: string
+                  example: "6451cf1d52a4adebd8a56401"
+      responses:
+        '200':
+          description: Registration is Success. 
+        '400':
+          description: User Details is Required.
+        '404':
+          description: Server error.
+        default:
+          description: Unexpected error
+  /unfollow:
+    put:
+      tags:
+        - User API    
+      post:
+      requestBody:
+        required: true
+        content:
+          # multipart/form-data:
+           application/json:
+            schema:
+              type: object
+              properties: 
+                followId:
+                  type: string
+                  example: "6451cf1d52a4adebd8a56401"
+      responses:
+        '200':
+          description: Registration is Success. 
+        '400':
+          description: User Details is Required.
+        '404':
+          description: Server error.
+        default:
+          description: Unexpected error
+        paths:
+  /create/movie:
+    post:
+      tags:
+        - Movies API   
+      post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+          #  application/json:
             schema:
               type: object
               properties: 
@@ -122,6 +277,39 @@ paths:
         '404':
           description: Server error.
         default:
-          description: Unexpected error
-  
+          description: Unexpected error  
+  /update/movie:
+    put:
+      tags:
+        - Movies API   
+      post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+          #  application/json:
+            schema:
+              type: object
+              properties: 
+                name:         
+                  type: string
+                  example: "sridhar"  
+                phone:       
+                  type: string
+                  example: "9491908107" 
+                email:
+                  type: string
+                  example: "sridhar@gmail.com"
+                password:
+                  type: string 
+                  example: "Sridhar1247@"
+      responses:
+        '200':
+          description: Registration is Success. 
+        '400':
+          description: User Details is Required.
+        '404':
+          description: Server error.
+        default:
+          description: Unexpected error  
   
