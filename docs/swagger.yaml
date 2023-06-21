@@ -16,9 +16,13 @@ servers:
  
 components:
   securitySchemes:
-    ApiTokenss:        # arbitrary name for the security scheme
+    bearerAuth:            # arbitrary name for the security scheme
       type: http
       scheme: bearer
+      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+# 2) Apply the security globally to all operations
+security:
+  - bearerAuth: [] 
 paths:
   /createUser:
     post:
@@ -62,7 +66,6 @@ paths:
       requestBody:
         required: true
         content:
-          # multipart/form-data:
            application/json:
             schema:
               type: object
@@ -82,7 +85,30 @@ paths:
           description: Server error.
         default:
           description: Unexpected error
-    
+  /user/info:
+    post:
+      tags:
+        - User API    
+      post:
+      requestBody:
+        required: true
+        content:
+           application/json:
+            schema:
+              type: object
+              properties: 
+                email:
+                  type: string
+                  example: "sridhar@gmail.com"
+      responses:
+        '200':
+          description: Registration is Success. 
+        '400':
+          description: Invalid Credentials
+        '404':
+          description: Server error.
+        default:
+          description: Unexpected error  
   /allUserDetails:
     get:
       tags:
@@ -311,5 +337,50 @@ paths:
         '404':
           description: Server error.
         default:
+          description: Unexpected error
+        paths:
+  /create/reel:
+    post:
+      tags:
+        - Reels API   
+      post:
+      requestBody:
+        required: true
+        content:
+          # multipart/form-data:
+           application/json:
+            schema:
+              type: object
+              properties: 
+                videoUrl:         
+                  type: string
+                  example: "https://about.instagram.com/features/reels"  
+                share:       
+                  type: string
+                  example: "facebook,instagram" 
+                tags:
+                  type: string
+                  example: "movies"
+      responses:
+        '200':
+          description: Reels Successfully Created. 
+        '400':
+          description: reels Details is Required.
+        '404':
+          description: Server error.
+        default:
+          description: Unexpected error
+  /allReelDetails:
+    get:
+      tags:
+        - Reels API    
+      responses:
+        '200':
+          description: Registration is Success. 
+        '400':
+          description: User Details is Required.
+        '404':
+          description: Server error.
+        default:
           description: Unexpected error  
-  
+ 

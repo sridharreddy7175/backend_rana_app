@@ -258,8 +258,8 @@ export class UserController {
         id: users._id,
         name: users.name,
         email: users.email,
-        password_changed: users.password,
         phone: users.phone,
+        accountType:users.accountType
       };
       return this.responseInterceptor.successResponse(
         req,

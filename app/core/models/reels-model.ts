@@ -2,12 +2,10 @@ import { model, Schema, Document } from "mongoose";
 const mongoose = require("mongoose");
 import { genres } from "../utillities/genres";
 
-interface IUser extends Document {
-  name: string;
-  email: string;
-  password: string;
-  accountType: boolean;
-  phone: string;
+interface IReels extends Document {
+  videoUrl: string;
+  share: string;
+  tags: string;
 }
 
 const ReelsSchema: Schema = new Schema(
@@ -25,12 +23,6 @@ const ReelsSchema: Schema = new Schema(
    comment:{
     type:String,
    },
-  //  userProfile:{
-  //   type:String,
-  //  },
-  //  follwing:{
-  //   type:String
-  //  },
    tags:{
     type:String
    }
@@ -38,4 +30,4 @@ const ReelsSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-export const MovieModel = model<IUser>("MovieModel", ReelsSchema);
+export const ReelModel = model<IReels>("ReelModel", ReelsSchema);

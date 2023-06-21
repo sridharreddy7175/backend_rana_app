@@ -31,6 +31,13 @@ export class AppRoutes {
         ],
       },
       {
+        path: "/allReelDetails",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.AllReelDetails.bind(routingComponents),
+        ],
+      },
+      {
         path: "/user/pwd-reset-link/:id",
         component: [
           this.authGuard.authCheck.bind(this.authGuard), //Auth Check
@@ -81,6 +88,13 @@ export class AppRoutes {
         component: [
           this.authGuard.authCheck.bind(this.authGuard),
           routingComponents.UserInfo.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/create/reel",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard),
+          routingComponents.CreateReels.bind(routingComponents),
         ],
       },
    

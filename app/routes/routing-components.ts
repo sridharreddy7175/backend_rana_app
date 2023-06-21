@@ -2,6 +2,8 @@ import { ResponseInterceptor } from "../core/utillities/response-interceptor";
 import { UserController } from "../core/controllers/user-controller";
 import { MovieController } from "../core/controllers/movie-controller";
 import { ForgotPasswordController } from "../core/controllers/forgotPassword-controller";
+import { ReelsController } from "../core/controllers/reels-controller";
+
 
 
 export class RoutingComponents {
@@ -9,12 +11,14 @@ export class RoutingComponents {
   userController: UserController;
   movieController: MovieController;
   forgotPasswordController:ForgotPasswordController;
+  reelsControler:ReelsController;
 
   constructor() {
     this.responseInterceptor = new ResponseInterceptor();
     this.userController = new UserController();
     this.movieController = new MovieController();
     this.forgotPasswordController=new ForgotPasswordController();
+    this.reelsControler=new ReelsController();
   }
   /**
    *  page not found.
@@ -66,5 +70,14 @@ export class RoutingComponents {
   // Movie Apis
   CreateMovie(req, res, next) {
     this.movieController.createMovie(req, res);
+  }
+
+  // Reeels Apis
+
+  CreateReels(req,res,next){
+    this.reelsControler.createReels(req,res)
+  }
+  AllReelDetails(req,res,next){
+    this.reelsControler.allReelDetails(req,res)
   }
 }
