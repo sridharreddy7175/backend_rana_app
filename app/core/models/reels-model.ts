@@ -1,11 +1,11 @@
 import { model, Schema, Document } from "mongoose";
 const mongoose = require("mongoose");
-import { genres } from "../utillities/genres";
+// import { genres } from "../utillities/genresList";
 
 interface IReels extends Document {
   videoUrl: string;
   share: string;
-  tags: string;
+  tags: any;
 }
 
 const ReelsSchema: Schema = new Schema(
@@ -24,7 +24,7 @@ const ReelsSchema: Schema = new Schema(
     type:String,
    },
    tags:{
-    type:String
+    type:Array
    }
   },
   { timestamps: true }

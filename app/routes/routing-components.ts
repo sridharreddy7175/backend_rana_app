@@ -3,6 +3,8 @@ import { UserController } from "../core/controllers/user-controller";
 import { MovieController } from "../core/controllers/movie-controller";
 import { ForgotPasswordController } from "../core/controllers/forgotPassword-controller";
 import { ReelsController } from "../core/controllers/reels-controller";
+import { PostController } from "../core/controllers/post-controller";
+
 
 
 
@@ -12,6 +14,7 @@ export class RoutingComponents {
   movieController: MovieController;
   forgotPasswordController:ForgotPasswordController;
   reelsControler:ReelsController;
+  postController:PostController;
 
   constructor() {
     this.responseInterceptor = new ResponseInterceptor();
@@ -19,6 +22,7 @@ export class RoutingComponents {
     this.movieController = new MovieController();
     this.forgotPasswordController=new ForgotPasswordController();
     this.reelsControler=new ReelsController();
+    this.postController=new PostController();
   }
   /**
    *  page not found.
@@ -72,6 +76,12 @@ export class RoutingComponents {
     this.movieController.createMovie(req, res);
   }
 
+  AllMoviesLists(req,res,next){
+    this.movieController.moviesList(req, res);
+  }
+  FetchMovie(req,res,next){
+   this.movieController.fetchMovie(req,res)
+  }
   // Reeels Apis
 
   CreateReels(req,res,next){
@@ -80,4 +90,22 @@ export class RoutingComponents {
   AllReelDetails(req,res,next){
     this.reelsControler.allReelDetails(req,res)
   }
+
+  // Posts Apis
+ CreatePost(req,res,next){
+  this.postController.createPost(req,res)
+ }
+ AllMyPosts(req,res,next){
+  this.postController.allmyPosts(req,res)
+ }
+ MyPost(req,res,next){
+  this.postController.myPost(req,res)
+ }
+ LikePost(req,res,next){
+  this.postController.likePost(req,res)
+ }
+ UnLikePost(req,res,next){
+  this.postController.unlikePost(req,res)
+ }
+
 }

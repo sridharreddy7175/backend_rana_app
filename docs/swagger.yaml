@@ -2,270 +2,312 @@ openapi: 3.0.0
 info:
   title: Rana App Api
   description: It is used to Rana App Api.
-  version: 1.0 
-  
+  version: 1.0
+
 servers:
   - url: http://localhost:8850/
-    description:  Local server 
+    description: Local server
   - url: https://prod.com/
-    description:  Pre Production server
+    description: Pre Production server
   - url: https://test.com/
-    description:  Production server
-  
+    description: Production server
 
- 
 components:
   securitySchemes:
-    bearerAuth:            # arbitrary name for the security scheme
+    bearerAuth: # arbitrary name for the security scheme
       type: http
       scheme: bearer
-      bearerFormat: JWT    # optional, arbitrary value for documentation purposes
+      bearerFormat: JWT # optional, arbitrary value for documentation purposes
 # 2) Apply the security globally to all operations
 security:
-  - bearerAuth: [] 
+  - bearerAuth: []
 paths:
   /createUser:
     post:
       tags:
-        - User API   
+        - User API
       post:
       requestBody:
         required: true
         content:
           # multipart/form-data:
-           application/json:
+          application/json:
             schema:
               type: object
-              properties: 
-                name:         
+              properties:
+                name:
                   type: string
-                  example: "sridhar"  
-                phone:       
+                  example: "sridhar"
+                phone:
                   type: string
-                  example: "9491908107" 
+                  example: "9491908107"
                 email:
                   type: string
                   example: "sridhar@gmail.com"
                 password:
-                  type: string 
+                  type: string
                   example: "Sridhar1247@"
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: User Details is Required.
-        '404':
+        "404":
           description: Server error.
         default:
           description: Unexpected error
   /userLogin:
     post:
       tags:
-        - User API    
+        - User API
       post:
       requestBody:
         required: true
         content:
-           application/json:
+          application/json:
             schema:
               type: object
-              properties: 
+              properties:
                 email:
                   type: string
-                  example: "sridhar@gmail.com"
+                  example: "lucky@gmail.com"
                 password:
-                  type: string 
-                  example: "Sridhar1247@"
+                  type: string
+                  example: "Sridhar@1247"
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: User Details is Required.
-        '404':
+        "404":
           description: Server error.
         default:
           description: Unexpected error
   /user/info:
     post:
       tags:
-        - User API    
+        - User API
       post:
       requestBody:
         required: true
         content:
-           application/json:
+          application/json:
             schema:
               type: object
-              properties: 
+              properties:
                 email:
                   type: string
                   example: "sridhar@gmail.com"
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: Invalid Credentials
-        '404':
+        "404":
           description: Server error.
         default:
-          description: Unexpected error  
+          description: Unexpected error
   /allUserDetails:
     get:
       tags:
-        - User API    
+        - User API
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: User Details is Required.
-        '404':
+        "404":
           description: Server error.
         default:
           description: Unexpected error
   /updateUser:
     put:
       tags:
-        - User API    
+        - User API
       post:
       requestBody:
         required: true
         content:
           # multipart/form-data:
-           application/json:
+          application/json:
             schema:
               type: object
-              properties: 
+              properties:
                 id:
                   type: string
                   example: "6451cf1d52a4adebd8a56401"
                 name:
-                  type: string 
+                  type: string
                   example: sridhar
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: User Details is Required.
-        '404':
+        "404":
           description: Server error.
         default:
           description: Unexpected error
   /forgot/password:
     post:
       tags:
-        - User API    
+        - User API
       post:
       requestBody:
         required: true
         content:
           # multipart/form-data:
-           application/json:
+          application/json:
             schema:
               type: object
-              properties: 
+              properties:
                 email:
                   type: string
                   example: "sridhar@gmail.com"
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: User Details is Required.
-        '404':
+        "404":
           description: Server error.
         default:
           description: Unexpected error
   /reset/password/{token}:
     post:
       tags:
-        - User API    
+        - User API
       post:
       requestBody:
         required: true
         content:
           # multipart/form-data:
-           application/json:
+          application/json:
             schema:
               type: object
-              properties: 
+              properties:
                 email:
                   type: string
                   example: "sridhar@gmail.com"
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: User Details is Required.
-        '404':
+        "404":
           description: Server error.
         default:
           description: Unexpected error
   /delete/user/{userId}:
     delete:
       tags:
-        - User API 
+        - User API
     parameters:
-    - in: path
-      name: userId
-      required: true
-      schema:
-        type: integer       
-      responses:
-        '200':
-          description: Registration is Success. 
-        '400':
-          description: User Details is Required.
-        '404':
-          description: Server error.
-        default:
-          description: Unexpected error
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: integer
+        responses:
+          "200":
+            description: Registration is Success.
+          "400":
+            description: User Details is Required.
+          "404":
+            description: Server error.
+          default:
+            description: Unexpected error
   /follow:
     put:
       tags:
-        - User API    
+        - User API
       post:
       requestBody:
         required: true
         content:
           # multipart/form-data:
-           application/json:
+          application/json:
             schema:
               type: object
-              properties: 
+              properties:
                 followId:
                   type: string
                   example: "6451cf1d52a4adebd8a56401"
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: User Details is Required.
-        '404':
+        "404":
           description: Server error.
         default:
           description: Unexpected error
   /unfollow:
     put:
       tags:
-        - User API    
+        - User API
       post:
       requestBody:
         required: true
         content:
           # multipart/form-data:
-           application/json:
+          application/json:
             schema:
               type: object
-              properties: 
+              properties:
                 followId:
                   type: string
                   example: "6451cf1d52a4adebd8a56401"
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: User Details is Required.
-        '404':
+        "404":
+          description: Server error.
+        default:
+          description: Unexpected error
+        paths:
+  /create/post:
+    post:
+      tags:
+        - Posts API
+      post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                story:
+                  type: string
+                  example: "sridhar"
+                photos:
+                  type: file
+                  example: "9491908107"
+                share:
+                  type: string
+                  example: "sridhar@gmail.com"
+      responses:
+        "200":
+          description: Successfully Created.
+        "400":
+          description: User Details is Required.
+        "404":
+          description: Server error.
+        default:
+          description: Unexpected error
+  /allmyposts:
+    get:
+      tags:
+        - Posts API
+      responses:
+        "200":
+          description: Registration is Success.
+        "400":
+          description: User Details is Required.
+        "404":
           description: Server error.
         default:
           description: Unexpected error
@@ -273,68 +315,68 @@ paths:
   /create/movie:
     post:
       tags:
-        - Movies API   
+        - Movies API
       post:
       requestBody:
         required: true
         content:
           multipart/form-data:
-          #  application/json:
+            #  application/json:
             schema:
               type: object
-              properties: 
-                name:         
+              properties:
+                name:
                   type: string
-                  example: "sridhar"  
-                phone:       
+                  example: "sridhar"
+                phone:
                   type: string
-                  example: "9491908107" 
+                  example: "9491908107"
                 email:
                   type: string
                   example: "sridhar@gmail.com"
                 password:
-                  type: string 
+                  type: string
                   example: "Sridhar1247@"
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: User Details is Required.
-        '404':
+        "404":
           description: Server error.
         default:
-          description: Unexpected error  
+          description: Unexpected error
   /update/movie:
     put:
       tags:
-        - Movies API   
+        - Movies API
       post:
       requestBody:
         required: true
         content:
           multipart/form-data:
-          #  application/json:
+            #  application/json:
             schema:
               type: object
-              properties: 
-                name:         
+              properties:
+                name:
                   type: string
-                  example: "sridhar"  
-                phone:       
+                  example: "sridhar"
+                phone:
                   type: string
-                  example: "9491908107" 
+                  example: "9491908107"
                 email:
                   type: string
                   example: "sridhar@gmail.com"
                 password:
-                  type: string 
+                  type: string
                   example: "Sridhar1247@"
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: User Details is Required.
-        '404':
+        "404":
           description: Server error.
         default:
           description: Unexpected error
@@ -342,45 +384,44 @@ paths:
   /create/reel:
     post:
       tags:
-        - Reels API   
+        - Reels API
       post:
       requestBody:
         required: true
         content:
           # multipart/form-data:
-           application/json:
+          application/json:
             schema:
               type: object
-              properties: 
-                videoUrl:         
+              properties:
+                videoUrl:
                   type: string
-                  example: "https://about.instagram.com/features/reels"  
-                share:       
+                  example: "https://about.instagram.com/features/reels"
+                share:
                   type: string
-                  example: "facebook,instagram" 
+                  example: "facebook,instagram"
                 tags:
                   type: string
                   example: "movies"
       responses:
-        '200':
-          description: Reels Successfully Created. 
-        '400':
+        "200":
+          description: Reels Successfully Created.
+        "400":
           description: reels Details is Required.
-        '404':
+        "404":
           description: Server error.
         default:
           description: Unexpected error
   /allReelDetails:
     get:
       tags:
-        - Reels API    
+        - Reels API
       responses:
-        '200':
-          description: Registration is Success. 
-        '400':
+        "200":
+          description: Registration is Success.
+        "400":
           description: User Details is Required.
-        '404':
+        "404":
           description: Server error.
         default:
-          description: Unexpected error  
- 
+          description: Unexpected error

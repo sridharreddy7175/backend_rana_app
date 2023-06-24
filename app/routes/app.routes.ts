@@ -2,8 +2,8 @@ import { RoutingComponents } from "./routing-components";
 import { AuthGuard } from "../core/utillities/auth-gaurd/auth-gaurd";
 import { Validator } from "../core/utillities/validator/validator";
 import { userSchema } from "./payload_schems/user-schemas";
-import * as multer from 'multer';
-// import {storage} from '../../app/core/utillities/imageupload'
+import * as multer from "multer";
+import { storage } from "../core/utillities/imageupload";
 
 export class AppRoutes {
   AppGetRoutes: any[];
@@ -17,7 +17,8 @@ export class AppRoutes {
     const routingComponents: RoutingComponents = new RoutingComponents();
     this.authGuard = new AuthGuard();
     this.validator = new Validator();
-    const upload = multer({ dest: '../files/' })  
+    // const upload = multer({ dest: '../files/' })
+    const upload = multer({ storage: storage });
 
     /**
      * GET Data APIs list
@@ -44,7 +45,36 @@ export class AppRoutes {
           routingComponents.AllUserDetails.bind(routingComponents),
         ],
       },
-      
+      {
+        path: "/allMoviesLists",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.AllMoviesLists.bind(routingComponents),
+        ],
+      },
+
+      {
+        path: "/fetch/movie/:id",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.FetchMovie.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/mypost/:postId",
+        component: [
+          // this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.MyPost.bind(routingComponents),
+        ],
+      },
+
+      {
+        path: "/allmyposts",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.AllMyPosts.bind(routingComponents),
+        ],
+      },
 
       //  todo remove after data fatech done..
       // 404
@@ -97,18 +127,28 @@ export class AppRoutes {
           routingComponents.CreateReels.bind(routingComponents),
         ],
       },
-   
+
       // CreateMovie
       {
         path: "/create/movie",
         component: [
           // this.authGuard.authCheck.bind(this.authGuard),
           // this.validator.validateBodyPayload.bind(this.validator, userSchema),
-          upload.single('poster'),
+          upload.single("poster"),
           routingComponents.CreateMovie.bind(routingComponents),
         ],
       },
-    
+
+      // Post Movie
+      {
+        path: "/create/post",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard),
+          // this.validator.validateBodyPayload.bind(this.validator, userSchema),
+          upload.array("photos"),
+          routingComponents.CreatePost.bind(routingComponents),
+        ],
+      },
     ];
     /**
      * Put calls
@@ -119,6 +159,20 @@ export class AppRoutes {
         component: [
           this.authGuard.authCheck.bind(this.authGuard), //Auth Check
           routingComponents.UpdateUser.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/like/:postId",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.LikePost.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/unlike/:postId",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.UnLikePost.bind(routingComponents),
         ],
       },
       {
@@ -136,7 +190,7 @@ export class AppRoutes {
         ],
       },
     ];
-       /**
+    /**
      * Delete calls
      */
     this.AppDeleteRoutes = [

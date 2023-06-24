@@ -1,4 +1,4 @@
-export const genres = [
+export const genresList = [
     "Action",
     "Adventure",
     "Animation",

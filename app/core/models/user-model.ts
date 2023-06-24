@@ -28,8 +28,10 @@ const userSchema: Schema = new Schema(
       required: true,
     },
     accountType: {
-      type: Boolean,
-      default: false,
+      type: String,
+      required: true,
+      default: "user",
+      enum: ["admin", "user"],
     },
     password: {
       type: String,
@@ -47,12 +49,12 @@ const userSchema: Schema = new Schema(
     following: [{ type: ObjectId, ref: "UserModel" }],
     tokens: [
       {
-          token: {
-              type: String,
-              required: true,
-          }
-      }
-  ],
+        token: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
 
     verifytoken: {
       type: String,
@@ -62,5 +64,3 @@ const userSchema: Schema = new Schema(
 );
 
 export const UserModel = model<IUser>("UserModel", userSchema);
-
-

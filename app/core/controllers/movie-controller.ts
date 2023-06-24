@@ -1,13 +1,5 @@
 import { MovieModel } from "../models/movie-model";
-import * as mongoose from "mongoose";
-import * as formidable from 'formidable'
 import { ResponseInterceptor } from "../utillities/response-interceptor";
-import { appConfig } from "../../config/appConfig";
-const multer = require('multer');
-// const formidable = require("formidable");
-const _ = require("lodash");
-const fs = require("fs");
-
 
 export class MovieController {
   movieModel: typeof MovieModel;
@@ -18,15 +10,15 @@ export class MovieController {
     this.responseInterceptor = new ResponseInterceptor();
   }
 
-  
-
   async createMovie(req, res) {
-    console.log("hhhhhhhhhhhh")
+    console.log("hhhhhhhhhhhh");
     try {
       const movieData: any = req.body;
-      // const {filename} = req.file;
-      console.log("req---------",req)
-      return
+      // const {filename} = req.file.Orginalname;
+      console.log("req---------", movieData);
+      console.log("sridhar-->", req.file.path);
+      // console.log("filename------->",filename)
+      // return
       // console.log("sridhar----->",movieData,filename)
       if (!movieData.title) {
         this.responseInterceptor.errorResponse(
@@ -92,14 +84,14 @@ export class MovieController {
           ""
         );
       }
-      if (!movieData.poster) {
-        this.responseInterceptor.errorResponse(
-          res,
-          400,
-          "poster is Required",
-          ""
-        );
-      }
+      // if (!movieData.poster) {
+      //   this.responseInterceptor.errorResponse(
+      //     res,
+      //     400,
+      //     "poster is Required",
+      //     ""
+      //   );
+      // }
       if (!movieData.trailer) {
         this.responseInterceptor.errorResponse(
           res,
@@ -124,20 +116,39 @@ export class MovieController {
           ""
         );
       }
+
+      let GenresSet: string[] = movieData.genres
+        .toString()
+        .split(",")
+        .map((genre: string) => genre.trim());
+      let TagsSet: string[] = movieData.tags
+        .toString()
+        .split(",")
+        .map((tag: string) => tag.trim());
+      let LanuageSet: string[] = movieData.language
+        .toString()
+        .split(",")
+        .map((language: string) => language.trim());
+      let CastSet: string[] = movieData.cast
+        .toString()
+        .split(",")
+        .map((cast: string) => cast.trim());
+
+      console.log("generSet------->", GenresSet);
       let newMovie = await new this.movieModel({
         title: movieData.title,
         storyLine: movieData.storyLine,
         director: movieData.director,
         type: movieData.type,
         releseDate: movieData.releseDate,
-        genres: movieData.genres,
-        tags: movieData.tags,
-        cast: movieData.cast,
-        // poster: filename,
+        genres: GenresSet,
+        tags: TagsSet,
+        cast: CastSet,
+        poster: req.file.originalname,
         trailer: movieData.trailer,
         video: movieData.video,
         imbRating: movieData.imbRating,
-        language: movieData.language,
+        language: LanuageSet,
       });
       newMovie = await newMovie.save();
       return this.responseInterceptor.successResponse(
@@ -147,52 +158,6 @@ export class MovieController {
         "Successfully Created",
         { movie_id: newMovie._id }
       );
-      // let form = new formidable.IncomingForm();
-      // form.keepExtensions = true;
-  
-      // form.parse(req, (err, fields, file) => {
-      //     if (err) {
-      //         return res.status(400).json({
-      //             error: "problem with image",
-      //         });
-      //     }
-      //     //destructure the fields
-      //     const { title, storyLine, director, releseDate, genres, tags, cast, poster
-      //         , trailer, imbRating, language, type, video
-      //     } = fields;
-  
-      //     // if (!title || !storyLine || !director || !releseDate || !genres || !tags || !cast || !poster
-      //     //     || !trailer || !imbRating || !language || !type || !video ) {
-      //     //     return res.status(400).json({
-      //     //         error: "Please include all fields",
-      //     //     });
-      //     // }
-  
-      //     let newMovie:any = new this.movieModel(fields);
-  
-  
-      //     //handle file here
-      //     if (file.photo) {
-      //         if (file.photo.size > 3000000) {
-      //             return res.status(400).json({
-      //                 error: "File size too big!",
-      //             });
-      //         }
-      //         newMovie.photo.data = fs.readFileSync(file.photo.path);
-      //         newMovie.photo.contentType = file.photo.type;
-      //     }
-      //     // console.log(product);
-  
-      //     //save to the DB
-      //     newMovie.save((err, newMovie) => {
-      //         if (err) {
-      //             res.status(400).json({
-      //                 error: "Saving app in DB failed",
-      //             });
-      //         }
-      //         res.json(newMovie);
-      //     });
-      // });
     } catch (err) {
       return this.responseInterceptor.errorResponse(
         res,
@@ -213,10 +178,15 @@ export class MovieController {
       if (req.query.pageno) {
         currentOffset = pageLimit * (req.query.pageno - 1);
       }
-      const result = await this.movieModel
+      let result: any;
+      result = await this.movieModel
         .find()
+        .sort("-createdAt")
         .limit(pageLimit)
         .skip(currentOffset);
+       if(req.query.datatype?.toLowerCase() === 'top'){
+        result=await this.movieModel.find().sort({ numViews: -1 })
+       }
       return this.responseInterceptor.successResponse(
         req,
         res,
@@ -234,7 +204,27 @@ export class MovieController {
     }
   }
 
-  async fetchMovie(req,res){
-
+  async fetchMovie(req, res) {
+    const { id } = req.params;
+    try {
+      const movie = await this.movieModel.findById(id);
+      //update number of views
+      await this.movieModel.findByIdAndUpdate(
+        id,
+        {
+          $inc: { numViews: 1 },
+        },
+        { new: true }
+      );
+      console.log("Movies------>", movie);
+      res.json(movie);
+    } catch (err) {
+      return this.responseInterceptor.errorResponse(
+        res,
+        500,
+        "Server error",
+        err
+      );
+    }
   }
 }

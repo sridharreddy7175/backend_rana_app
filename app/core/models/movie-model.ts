@@ -1,6 +1,6 @@
 import  { model, Schema, Document } from "mongoose";
 // const mongoose = require("mongoose");
-import { genres } from "../utillities/genres";
+import { genresList } from "../utillities/genresList";
 import * as mongoose from 'mongoose';
 
 
@@ -11,8 +11,8 @@ interface IMovie extends Document {
   director: string;
   type: string;
   releseDate: Date;
-  genres:string;
-  tags: string;
+  genres:any;
+  tags: any;
   cast: string;
   likes :any;
   poster:string;
@@ -49,16 +49,18 @@ const movieSchema: Schema = new Schema(
       // required: true,
     },
     genres: {
-      type: [String],
+      // type: Array,
+      type : [String],
       // required: true,
-      enum: genres,
+      // enum: genresList,
     },
     tags: {
-      type: Array,
+      // type: Array,
+      type : [String],
       // required:true
     },
     cast:{
-      type:Array,
+      type : [String],
       // required:true
     },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
