@@ -5,11 +5,15 @@ const routing_components_1 = require("./routing-components");
 const auth_gaurd_1 = require("../core/utillities/auth-gaurd/auth-gaurd");
 const validator_1 = require("../core/utillities/validator/validator");
 const user_schemas_1 = require("./payload_schems/user-schemas");
+const multer = require("multer");
+const imageupload_1 = require("../core/utillities/imageupload");
 class AppRoutes {
     constructor() {
         const routingComponents = new routing_components_1.RoutingComponents();
         this.authGuard = new auth_gaurd_1.AuthGuard();
         this.validator = new validator_1.Validator();
+        // const upload = multer({ dest: '../files/' })
+        const upload = multer({ storage: imageupload_1.storage });
         /**
          * GET Data APIs list
          */
@@ -19,6 +23,48 @@ class AppRoutes {
                 component: [
                     this.authGuard.authCheck.bind(this.authGuard),
                     routingComponents.AllUserDetails.bind(routingComponents),
+                ],
+            },
+            {
+                path: "/allReelDetails",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.AllReelDetails.bind(routingComponents),
+                ],
+            },
+            {
+                path: "/user/pwd-reset-link/:id",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.AllUserDetails.bind(routingComponents),
+                ],
+            },
+            {
+                path: "/allMoviesLists",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.AllMoviesLists.bind(routingComponents),
+                ],
+            },
+            {
+                path: "/fetch/movie/:id",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.FetchMovie.bind(routingComponents),
+                ],
+            },
+            {
+                path: "/mypost/:postId",
+                component: [
+                    // this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+                    routingComponents.MyPost.bind(routingComponents),
+                ],
+            },
+            {
+                path: "/allmyposts",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.AllMyPosts.bind(routingComponents),
                 ],
             },
             //  todo remove after data fatech done..
@@ -51,10 +97,21 @@ class AppRoutes {
                 component: [routingComponents.ForgotPassword.bind(routingComponents)],
             },
             {
+                path: "/reset/password/:token",
+                component: [routingComponents.resetPassword.bind(routingComponents)],
+            },
+            {
                 path: "/user/info",
                 component: [
                     this.authGuard.authCheck.bind(this.authGuard),
                     routingComponents.UserInfo.bind(routingComponents),
+                ],
+            },
+            {
+                path: "/create/reel",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.CreateReels.bind(routingComponents),
                 ],
             },
             // CreateMovie
@@ -63,7 +120,18 @@ class AppRoutes {
                 component: [
                     // this.authGuard.authCheck.bind(this.authGuard),
                     // this.validator.validateBodyPayload.bind(this.validator, userSchema),
+                    upload.single("poster"),
                     routingComponents.CreateMovie.bind(routingComponents),
+                ],
+            },
+            // Post Movie
+            {
+                path: "/create/post",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    // this.validator.validateBodyPayload.bind(this.validator, userSchema),
+                    upload.array("photos"),
+                    routingComponents.CreatePost.bind(routingComponents),
                 ],
             },
         ];
@@ -76,6 +144,20 @@ class AppRoutes {
                 component: [
                     this.authGuard.authCheck.bind(this.authGuard),
                     routingComponents.UpdateUser.bind(routingComponents),
+                ],
+            },
+            {
+                path: "/like/:postId",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.LikePost.bind(routingComponents),
+                ],
+            },
+            {
+                path: "/unlike/:postId",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.UnLikePost.bind(routingComponents),
                 ],
             },
             {
@@ -92,10 +174,17 @@ class AppRoutes {
                     routingComponents.UnFollow.bind(routingComponents),
                 ],
             },
+            {
+                path: "/activeuser",
+                component: [
+                    // this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.ActiveUser.bind(routingComponents),
+                ],
+            },
         ];
         /**
-      * Delete calls
-      */
+         * Delete calls
+         */
         this.AppDeleteRoutes = [
             {
                 path: "/delete/user/:id",

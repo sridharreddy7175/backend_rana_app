@@ -103,7 +103,10 @@ export class UserController {
           ""
         );
       try {
-        let userCredentials = await this.userModel.findOne({ email: email });
+        let userCredentials: any = await this.userModel.findOne({
+          email: email,
+        });
+        console.log("userCreditions", userCredentials.activeStatus);
         if (!userCredentials) {
           return this.responseInterceptor.errorResponse(
             res,
@@ -126,16 +129,24 @@ export class UserController {
           );
         }
 
-        if (isPasswordCompared) {
-          let token = await this.authGuard.generateAuthToken(
-            userCredentials._id
-          );
-          return this.responseInterceptor.successResponse(
-            req,
+        if (userCredentials.activeStatus) {
+          if (isPasswordCompared) {
+            let token = await this.authGuard.generateAuthToken(
+              userCredentials._id
+            );
+            return this.responseInterceptor.successResponse(
+              req,
+              res,
+              200,
+              "token generated",
+              token
+            );
+          }
+        } else {
+          return this.responseInterceptor.errorResponse(
             res,
-            200,
-            "token generated",
-            token
+            400,
+            "Once admin is approved he will be login"
           );
         }
       } catch (err) {
@@ -240,8 +251,6 @@ export class UserController {
     }
   }
 
-  
-
   async userInfo(req, res) {
     try {
       let email = req.body.email;
@@ -259,7 +268,7 @@ export class UserController {
         name: users.name,
         email: users.email,
         phone: users.phone,
-        accountType:users.accountType
+        accountType: users.accountType,
       };
       return this.responseInterceptor.successResponse(
         req,
@@ -396,5 +405,75 @@ export class UserController {
       );
     }
   }
-  async PwdResetLink(req, res) {}
+
+  async activeUser(req, res) {
+    try {
+      // let email = req.body.email;
+      let { roleType, email } = req.body;
+      let users: any = await this.userModel.findOne({ email: email });
+      console.log("users", users);
+      if (!users.email) {
+        this.responseInterceptor.errorResponse(res, 400, "_id is Required", "");
+        return;
+      }
+      const query = {
+        _id: new mongoose.Types.ObjectId(users._id),
+      };
+      console.log("roletype", roleType);
+      if (roleType === "user") {
+        await this.userModel
+          .updateMany({ _id: query }, [
+            { $set: { accountType: "user", activeStatus: true } },
+          ])
+          .then((data) => {
+            return this.responseInterceptor.sendSuccess(
+              res,
+              "Success fully updated."
+            );
+          })
+          .catch((err) => {
+            this.responseInterceptor.errorResponse(
+              res,
+              400,
+              "db operation failed",
+              err
+            );
+          });
+      } else if (roleType === "admin") {
+        await this.userModel
+          .updateMany({ _id: query }, [
+            { $set: { accountType: "admin", activeStatus: true } },
+          ])
+          .then((data) => {
+            return this.responseInterceptor.sendSuccess(
+              res,
+              "Success fully updated."
+            );
+          })
+          .catch((err) => {
+            this.responseInterceptor.errorResponse(
+              res,
+              400,
+              "db operation failed",
+              err
+            );
+          });
+      } else {
+        this.responseInterceptor.errorResponse(
+          res,
+          400,
+          "Failed to  the update role",
+          roleType
+        );
+        return;
+      }
+    } catch (err) {
+      this.responseInterceptor.errorResponse(
+        res,
+        400,
+        "Failed to remove the user",
+        err
+      );
+    }
+  }
 }

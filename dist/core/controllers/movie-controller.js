@@ -19,68 +19,98 @@ class MovieController {
     }
     createMovie(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log("hhhhhhhhhhhh");
             try {
                 const movieData = req.body;
+                // const {filename} = req.file.Orginalname;
+                console.log("req---------", movieData);
+                console.log("sridhar-->", req.file.path);
+                // console.log("filename------->",filename)
+                // return
+                // console.log("sridhar----->",movieData,filename)
                 if (!movieData.title) {
-                    this.responseInterceptor.errorResponse(res, 400, 'title is Required', '');
+                    this.responseInterceptor.errorResponse(res, 400, "title is Required", "");
                 }
                 if (!movieData.storyLine) {
-                    this.responseInterceptor.errorResponse(res, 400, 'storyline is Required', '');
+                    this.responseInterceptor.errorResponse(res, 400, "storyline is Required", "");
                 }
                 if (!movieData.director) {
-                    this.responseInterceptor.errorResponse(res, 400, 'director is Required', '');
+                    this.responseInterceptor.errorResponse(res, 400, "director is Required", "");
                 }
                 if (!movieData.type) {
-                    this.responseInterceptor.errorResponse(res, 400, 'type is Required', '');
+                    this.responseInterceptor.errorResponse(res, 400, "type is Required", "");
                 }
                 if (!movieData.releseDate) {
-                    this.responseInterceptor.errorResponse(res, 400, 'releseDate is Required', '');
+                    this.responseInterceptor.errorResponse(res, 400, "releseDate is Required", "");
                 }
                 if (!movieData.genres) {
-                    this.responseInterceptor.errorResponse(res, 400, 'genres is Required', '');
+                    this.responseInterceptor.errorResponse(res, 400, "genres is Required", "");
                 }
                 if (!movieData.tags) {
-                    this.responseInterceptor.errorResponse(res, 400, 'tags is Required', '');
+                    this.responseInterceptor.errorResponse(res, 400, "tags is Required", "");
                 }
                 if (!movieData.cast) {
-                    this.responseInterceptor.errorResponse(res, 400, 'cast is Required', '');
+                    this.responseInterceptor.errorResponse(res, 400, "cast is Required", "");
                 }
-                if (!movieData.poster) {
-                    this.responseInterceptor.errorResponse(res, 400, 'poster is Required', '');
-                }
+                // if (!movieData.poster) {
+                //   this.responseInterceptor.errorResponse(
+                //     res,
+                //     400,
+                //     "poster is Required",
+                //     ""
+                //   );
+                // }
                 if (!movieData.trailer) {
-                    this.responseInterceptor.errorResponse(res, 400, 'trailer is Required', '');
+                    this.responseInterceptor.errorResponse(res, 400, "trailer is Required", "");
                 }
                 if (!movieData.imbRating) {
-                    this.responseInterceptor.errorResponse(res, 400, 'imbRating is Required', '');
+                    this.responseInterceptor.errorResponse(res, 400, "imbRating is Required", "");
                 }
                 if (!movieData.language) {
-                    this.responseInterceptor.errorResponse(res, 400, 'language is Required', '');
+                    this.responseInterceptor.errorResponse(res, 400, "language is Required", "");
                 }
+                let GenresSet = movieData.genres
+                    .toString()
+                    .split(",")
+                    .map((genre) => genre.trim());
+                let TagsSet = movieData.tags
+                    .toString()
+                    .split(",")
+                    .map((tag) => tag.trim());
+                let LanuageSet = movieData.language
+                    .toString()
+                    .split(",")
+                    .map((language) => language.trim());
+                let CastSet = movieData.cast
+                    .toString()
+                    .split(",")
+                    .map((cast) => cast.trim());
+                console.log("generSet------->", GenresSet);
                 let newMovie = yield new this.movieModel({
                     title: movieData.title,
                     storyLine: movieData.storyLine,
                     director: movieData.director,
                     type: movieData.type,
                     releseDate: movieData.releseDate,
-                    genres: movieData.genres,
-                    tags: movieData.tags,
-                    cast: movieData.cast,
-                    poster: movieData.poster,
+                    genres: GenresSet,
+                    tags: TagsSet,
+                    cast: CastSet,
+                    poster: req.file.originalname,
                     trailer: movieData.trailer,
                     video: movieData.video,
                     imbRating: movieData.imbRating,
-                    language: movieData.language
+                    language: LanuageSet,
                 });
                 newMovie = yield newMovie.save();
-                return this.responseInterceptor.successResponse(req, res, null, 'Successfully Created', { movie_id: newMovie._id });
+                return this.responseInterceptor.successResponse(req, res, null, "Successfully Created", { movie_id: newMovie._id });
             }
             catch (err) {
-                return this.responseInterceptor.errorResponse(res, 400, 'Server error', err);
+                return this.responseInterceptor.errorResponse(res, 400, "Server error", err);
             }
         });
     }
     moviesList(req, res) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let currentOffset = 0;
@@ -91,11 +121,36 @@ class MovieController {
                 if (req.query.pageno) {
                     currentOffset = pageLimit * (req.query.pageno - 1);
                 }
-                const result = yield this.movieModel.find().limit(pageLimit).skip(currentOffset);
-                return this.responseInterceptor.successResponse(req, res, 200, 'Data found', result);
+                let result;
+                result = yield this.movieModel
+                    .find()
+                    .sort("-createdAt")
+                    .limit(pageLimit)
+                    .skip(currentOffset);
+                if (((_a = req.query.datatype) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === 'top') {
+                    result = yield this.movieModel.find().sort({ numViews: -1 });
+                }
+                return this.responseInterceptor.successResponse(req, res, 200, "Data found", result);
             }
             catch (err) {
-                return this.responseInterceptor.errorResponse(res, 500, 'Server error', err);
+                return this.responseInterceptor.errorResponse(res, 500, "Server error", err);
+            }
+        });
+    }
+    fetchMovie(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id } = req.params;
+            try {
+                const movie = yield this.movieModel.findById(id);
+                //update number of views
+                yield this.movieModel.findByIdAndUpdate(id, {
+                    $inc: { numViews: 1 },
+                }, { new: true });
+                console.log("Movies------>", movie);
+                res.json(movie);
+            }
+            catch (err) {
+                return this.responseInterceptor.errorResponse(res, 500, "Server error", err);
             }
         });
     }

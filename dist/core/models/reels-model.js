@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MovieModel = void 0;
+exports.ReelModel = void 0;
 const mongoose_1 = require("mongoose");
 const mongoose = require("mongoose");
 const ReelsSchema = new mongoose_1.Schema({
@@ -17,15 +17,9 @@ const ReelsSchema = new mongoose_1.Schema({
     comment: {
         type: String,
     },
-    //  userProfile:{
-    //   type:String,
-    //  },
-    //  follwing:{
-    //   type:String
-    //  },
     tags: {
-        type: String
+        type: Array
     }
 }, { timestamps: true });
-exports.MovieModel = (0, mongoose_1.model)("MovieModel", ReelsSchema);
+exports.ReelModel = (0, mongoose_1.model)("ReelModel", ReelsSchema);
 //# sourceMappingURL=reels-model.js.map

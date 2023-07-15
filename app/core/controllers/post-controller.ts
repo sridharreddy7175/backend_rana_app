@@ -1,4 +1,4 @@
-import { PostModel } from "../models/post-modle";
+import { PostModel } from "../models/post-model";
 import { ResponseInterceptor } from "../utillities/response-interceptor";
 import * as mongoose from "mongoose";
 

@@ -4,7 +4,7 @@ import { MovieController } from "../core/controllers/movie-controller";
 import { ForgotPasswordController } from "../core/controllers/forgotPassword-controller";
 import { ReelsController } from "../core/controllers/reels-controller";
 import { PostController } from "../core/controllers/post-controller";
-
+import {CommentsController} from '../core/controllers/comment-controller'
 
 
 
@@ -15,6 +15,7 @@ export class RoutingComponents {
   forgotPasswordController:ForgotPasswordController;
   reelsControler:ReelsController;
   postController:PostController;
+  commentsController:CommentsController
 
   constructor() {
     this.responseInterceptor = new ResponseInterceptor();
@@ -23,6 +24,7 @@ export class RoutingComponents {
     this.forgotPasswordController=new ForgotPasswordController();
     this.reelsControler=new ReelsController();
     this.postController=new PostController();
+    this.commentsController=new CommentsController();
   }
   /**
    *  page not found.
@@ -70,6 +72,10 @@ export class RoutingComponents {
   UnFollow(req, res) {
     this.userController.unFollow(req, res);
   }
+  ActiveUser(req,res){
+    this.userController.activeUser(req, res);
+
+  }
 
   // Movie Apis
   CreateMovie(req, res, next) {
@@ -106,6 +112,15 @@ export class RoutingComponents {
  }
  UnLikePost(req,res,next){
   this.postController.unlikePost(req,res)
+ }
+ CreateComment(req,res,next){
+  this.commentsController.createComment(req,res)
+ }
+ AllComments(req,res){
+  this.commentsController.allComments(req,res)
+ }
+ FetchComment(req,res){
+  this.commentsController.fetchComment(req,res)
  }
 
 }

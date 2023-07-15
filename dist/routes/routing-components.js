@@ -4,11 +4,17 @@ exports.RoutingComponents = void 0;
 const response_interceptor_1 = require("../core/utillities/response-interceptor");
 const user_controller_1 = require("../core/controllers/user-controller");
 const movie_controller_1 = require("../core/controllers/movie-controller");
+const forgotPassword_controller_1 = require("../core/controllers/forgotPassword-controller");
+const reels_controller_1 = require("../core/controllers/reels-controller");
+const post_controller_1 = require("../core/controllers/post-controller");
 class RoutingComponents {
     constructor() {
         this.responseInterceptor = new response_interceptor_1.ResponseInterceptor();
         this.userController = new user_controller_1.UserController();
         this.movieController = new movie_controller_1.MovieController();
+        this.forgotPasswordController = new forgotPassword_controller_1.ForgotPasswordController();
+        this.reelsControler = new reels_controller_1.ReelsController();
+        this.postController = new post_controller_1.PostController();
     }
     /**
      *  page not found.
@@ -35,7 +41,10 @@ class RoutingComponents {
         this.userController.allUserDetails(req, res);
     }
     ForgotPassword(req, res) {
-        this.userController.userForgotpassword(req, res);
+        this.forgotPasswordController.userForgotpassword(req, res);
+    }
+    resetPassword(req, res) {
+        this.forgotPasswordController.resetPassword(req, res);
     }
     Follow(req, res) {
         this.userController.follow(req, res);
@@ -43,9 +52,41 @@ class RoutingComponents {
     UnFollow(req, res) {
         this.userController.unFollow(req, res);
     }
+    ActiveUser(req, res) {
+        this.userController.activeUser(req, res);
+    }
     // Movie Apis
     CreateMovie(req, res, next) {
         this.movieController.createMovie(req, res);
+    }
+    AllMoviesLists(req, res, next) {
+        this.movieController.moviesList(req, res);
+    }
+    FetchMovie(req, res, next) {
+        this.movieController.fetchMovie(req, res);
+    }
+    // Reeels Apis
+    CreateReels(req, res, next) {
+        this.reelsControler.createReels(req, res);
+    }
+    AllReelDetails(req, res, next) {
+        this.reelsControler.allReelDetails(req, res);
+    }
+    // Posts Apis
+    CreatePost(req, res, next) {
+        this.postController.createPost(req, res);
+    }
+    AllMyPosts(req, res, next) {
+        this.postController.allmyPosts(req, res);
+    }
+    MyPost(req, res, next) {
+        this.postController.myPost(req, res);
+    }
+    LikePost(req, res, next) {
+        this.postController.likePost(req, res);
+    }
+    UnLikePost(req, res, next) {
+        this.postController.unlikePost(req, res);
     }
 }
 exports.RoutingComponents = RoutingComponents;

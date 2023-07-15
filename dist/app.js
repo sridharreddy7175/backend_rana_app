@@ -31,7 +31,7 @@ class App {
         });
         this.loadAndConfig();
         this.app.listen(this.PORT, () => {
-            console.log(`[server]: Server is running at https://localhost:${this.PORT}`);
+            console.log(`[server]: Server is running at http://localhost:${this.PORT}`);
         });
     }
     mongoSetup() {
@@ -61,6 +61,7 @@ class App {
         this.app.use(bodyParser.urlencoded({ extended: false }));
         this.app.use(cors());
         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+        this.app.use("/uploads", express.static("uploads"));
     }
 }
 exports.default = new App().app;

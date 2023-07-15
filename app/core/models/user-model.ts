@@ -33,6 +33,10 @@ const userSchema: Schema = new Schema(
       default: "user",
       enum: ["admin", "user"],
     },
+    activeStatus: {
+      type: Boolean,
+      default: false,
+    },
     password: {
       type: String,
       required: true,
@@ -47,18 +51,18 @@ const userSchema: Schema = new Schema(
     },
     followers: [{ type: ObjectId, ref: "UserModel" }],
     following: [{ type: ObjectId, ref: "UserModel" }],
-    tokens: [
-      {
-        token: {
-          type: String,
-          required: true,
-        },
-      },
-    ],
+    // tokens: [
+    //   {
+    //     token: {
+    //       type: String,
+    //       required: true,
+    //     },
+    //   },
+    // ],
 
-    verifytoken: {
-      type: String,
-    },
+    // verifytoken: {
+    //   type: String,
+    // },
   },
   { timestamps: true }
 );

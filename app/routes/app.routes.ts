@@ -76,6 +76,21 @@ export class AppRoutes {
         ],
       },
 
+      {
+        path: "/allcomments",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.AllComments.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/comment/:commentId",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.FetchComment.bind(routingComponents),
+        ],
+      },
+
       //  todo remove after data fatech done..
       // 404
       {
@@ -149,6 +164,13 @@ export class AppRoutes {
           routingComponents.CreatePost.bind(routingComponents),
         ],
       },
+      {
+        path: "/create/comment",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard),
+          routingComponents.CreateComment.bind(routingComponents),
+        ],
+      },
     ];
     /**
      * Put calls
@@ -187,6 +209,13 @@ export class AppRoutes {
         component: [
           this.authGuard.authCheck.bind(this.authGuard),
           routingComponents.UnFollow.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/activeuser",
+        component: [
+          // this.authGuard.authCheck.bind(this.authGuard),
+          routingComponents.ActiveUser.bind(routingComponents),
         ],
       },
     ];

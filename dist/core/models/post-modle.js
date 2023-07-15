@@ -8,24 +8,28 @@ const postSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     photos: {
-        type: String,
+        type: Array,
         required: true,
     },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    comments: [
+    likes: [
         {
-            text: String,
-            postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+            user: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
         },
     ],
-    postedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-    },
+    comments: [
+        {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+            text: { type: String, required: true },
+            name: { type: String, required: true },
+            avatar: { type: String, required: true },
+            date: { type: String, required: true },
+        },
+    ],
     share: {
         type: String,
-        required: true,
+        // required: true,
     },
 }, { timestamps: true });
 exports.PostModel = (0, mongoose_1.model)("PostModel", postSchema);

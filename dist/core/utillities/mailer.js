@@ -1,13 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transporter = void 0;
-const nodemailer = require("nodemailer");
-exports.transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    auth: {
-        user: 'maryam72@ethereal.email',
-        pass: '37KA1XfbeRdR8FJYm7'
+exports.sendEmail = void 0;
+const appConfig_1 = require("../../config/appConfig");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(appConfig_1.appConfig.apikey);
+const sendEmail = (receiver, source, subject, content) => {
+    try {
+        const data = {
+            to: receiver,
+            from: source,
+            subject,
+            html: content,
+        };
+        console.log("data---->", data);
+        return sgMail.send(data);
     }
-});
+    catch (e) {
+        console.log("e---->", e);
+        return new Error(e);
+    }
+};
+exports.sendEmail = sendEmail;
 //# sourceMappingURL=mailer.js.map

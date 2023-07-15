@@ -15,10 +15,7 @@ const user_model_1 = require("../models/user-model");
 const response_interceptor_1 = require("../utillities/response-interceptor");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
-// import * as crypto from 'node:crypto';
-const jwt = require("jsonwebtoken");
-const appConfig_1 = require("../../config/appConfig");
-const mailer_1 = require("../utillities/mailer");
+const sgMail = require("@sendgrid/mail");
 class UserController {
     constructor() {
         this.userModel = user_model_1.UserModel;
@@ -71,7 +68,10 @@ class UserController {
                 if (!email || !password)
                     return this.responseInterceptor.errorResponse(res, 400, "Invalid credentials.", "");
                 try {
-                    let userCredentials = yield this.userModel.findOne({ email: email });
+                    let userCredentials = yield this.userModel.findOne({
+                        email: email,
+                    });
+                    console.log("userCreditions", userCredentials.activeStatus);
                     if (!userCredentials) {
                         return this.responseInterceptor.errorResponse(res, 400, "Invalid credentials.", "");
                     }
@@ -80,9 +80,14 @@ class UserController {
                     if (!isPasswordCompared) {
                         return this.responseInterceptor.errorResponse(res, 401, "Invalid Password", "");
                     }
-                    if (isPasswordCompared) {
-                        let token = yield this.authGuard.generateAuthToken(userCredentials._id);
-                        return this.responseInterceptor.successResponse(req, res, 200, "token generated", token);
+                    if (userCredentials.activeStatus) {
+                        if (isPasswordCompared) {
+                            let token = yield this.authGuard.generateAuthToken(userCredentials._id);
+                            return this.responseInterceptor.successResponse(req, res, 200, "token generated", token);
+                        }
+                    }
+                    else {
+                        return this.responseInterceptor.errorResponse(res, 400, "Once admin is approved he will be login");
                     }
                 }
                 catch (err) {
@@ -150,42 +155,6 @@ class UserController {
             }
         });
     }
-    userForgotpassword(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                let { email, id } = req.body;
-                let user = yield this.userModel.findOne({ email: email });
-                if (!user) {
-                    return this.responseInterceptor.errorResponse(res, 404, "User not found", "");
-                }
-                // token generate for reset password
-                const token = jwt.sign({ _id: user._id }, appConfig_1.appConfig.session_token, {
-                    expiresIn: "120s",
-                });
-                if (token) {
-                    const mailOptions = {
-                        from: "help@ums.dev",
-                        to: email,
-                        subject: "Sending Email For password Reset",
-                        text: `This Link Valid For 2 MINUTES http://localhost:3001/forgotpassword/${user.id}/${token}`,
-                    };
-                    mailer_1.transporter.sendMail(mailOptions, (error, info) => {
-                        if (error) {
-                            console.log("error", error);
-                            this.responseInterceptor.errorResponse(res, 400, "email not send", error);
-                        }
-                        else {
-                            console.log("Email sent", info.response);
-                            return this.responseInterceptor.sendSuccess(res, "Email sent Succsfully");
-                        }
-                    });
-                }
-            }
-            catch (err) {
-                return this.responseInterceptor.errorResponse(res, 500, "Something went wrong", err);
-            }
-        });
-    }
     userInfo(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -198,8 +167,8 @@ class UserController {
                     id: users._id,
                     name: users.name,
                     email: users.email,
-                    password_changed: users.password,
                     phone: users.phone,
+                    accountType: users.accountType,
                 };
                 return this.responseInterceptor.successResponse(req, res, null, "Data found", currentUserData);
             }
@@ -277,6 +246,55 @@ class UserController {
                     $pull: { following: unFollowId },
                 }, { new: true });
                 return this.responseInterceptor.sendSuccess(res, "You have successfully unfollowed this user");
+            }
+            catch (err) {
+                this.responseInterceptor.errorResponse(res, 400, "Failed to remove the user", err);
+            }
+        });
+    }
+    activeUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // let email = req.body.email;
+                let { roleType, email } = req.body;
+                let users = yield this.userModel.findOne({ email: email });
+                console.log("users", users);
+                if (!users.email) {
+                    this.responseInterceptor.errorResponse(res, 400, "_id is Required", "");
+                    return;
+                }
+                const query = {
+                    _id: new mongoose.Types.ObjectId(users._id),
+                };
+                console.log("roletype", roleType);
+                if (roleType === "user") {
+                    yield this.userModel
+                        .updateMany({ _id: query }, [
+                        { $set: { accountType: "user", activeStatus: true } },
+                    ])
+                        .then((data) => {
+                        return this.responseInterceptor.sendSuccess(res, "Success fully updated.");
+                    })
+                        .catch((err) => {
+                        this.responseInterceptor.errorResponse(res, 400, "db operation failed", err);
+                    });
+                }
+                else if (roleType === "admin") {
+                    yield this.userModel
+                        .updateMany({ _id: query }, [
+                        { $set: { accountType: "admin", activeStatus: true } },
+                    ])
+                        .then((data) => {
+                        return this.responseInterceptor.sendSuccess(res, "Success fully updated.");
+                    })
+                        .catch((err) => {
+                        this.responseInterceptor.errorResponse(res, 400, "db operation failed", err);
+                    });
+                }
+                else {
+                    this.responseInterceptor.errorResponse(res, 400, "Failed to  the update role", roleType);
+                    return;
+                }
             }
             catch (err) {
                 this.responseInterceptor.errorResponse(res, 400, "Failed to remove the user", err);

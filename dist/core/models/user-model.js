@@ -19,6 +19,12 @@ const userSchema = new mongoose_1.Schema({
         required: true,
     },
     accountType: {
+        type: String,
+        required: true,
+        default: "user",
+        enum: ["admin", "user"],
+    },
+    activeStatus: {
         type: Boolean,
         default: false,
     },
@@ -36,6 +42,17 @@ const userSchema = new mongoose_1.Schema({
     },
     followers: [{ type: ObjectId, ref: "UserModel" }],
     following: [{ type: ObjectId, ref: "UserModel" }],
+    // tokens: [
+    //   {
+    //     token: {
+    //       type: String,
+    //       required: true,
+    //     },
+    //   },
+    // ],
+    // verifytoken: {
+    //   type: String,
+    // },
 }, { timestamps: true });
 exports.UserModel = (0, mongoose_1.model)("UserModel", userSchema);
 //# sourceMappingURL=user-model.js.map
