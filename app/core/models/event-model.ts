@@ -1,7 +1,7 @@
 import { model, Schema, Document } from "mongoose";
 
 interface IUser extends Document {
-  name: string;
+  heroName: string;
   email: string;
   password: string;
   accountType: boolean;
@@ -9,25 +9,23 @@ interface IUser extends Document {
 }
 
 const eventSchema: Schema = new Schema({
-  name: {
+  heroName: {
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  phone: {
+  eventPoster: {
     type: String,
     required: true,
   },
-  accountType: {
+  date: {
+    type: Date,
+  },
+  description: {
     type: Boolean,
     default: false,
   },
-  password: {
-    type: String,
+  tickets: {
+    type: Number,
     required: true,
   },
 },{timestamps:true});

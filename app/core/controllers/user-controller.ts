@@ -3,13 +3,6 @@ import { UserModel } from "../models/user-model";
 import { ResponseInterceptor } from "../utillities/response-interceptor";
 import * as bcrypt from "bcryptjs";
 import * as mongoose from "mongoose";
-// import * as crypto from 'node:crypto';
-import * as jwt from "jsonwebtoken";
-import { appConfig } from "../../config/appConfig";
-const sgMail = require("@sendgrid/mail");
-// sgMail.setApiKey(appConfig.apikey);
-
-import { sendEmail } from "../utillities/mailer";
 
 export class UserController {
   userModel: typeof UserModel;
@@ -63,17 +56,30 @@ export class UserController {
         );
         return;
       }
+
       // encrypt the password
       let salt = await bcrypt.genSalt(10);
       let encryptPassword = await bcrypt.hash(userData.password, salt);
+      let saveduser: any;
+      if (userData.accountType && userData.accountType === "admin") {
+        saveduser = new this.userModel({
+          name: userData.name,
+          email: userData.email,
+          password: encryptPassword,
+          phone: userData.phone,
+          accountType:"admin",
+          activeStatus:true
+        });
+      } else {
+        // save to db
+        saveduser = new this.userModel({
+          name: userData.name,
+          email: userData.email,
+          password: encryptPassword,
+          phone: userData.phone,
+        });
+      }
 
-      // save to db
-      let saveduser = new this.userModel({
-        name: userData.name,
-        email: userData.email,
-        password: encryptPassword,
-        phone: userData.phone,
-      });
       saveduser = await saveduser.save();
       return this.responseInterceptor.successResponse(
         req,
@@ -424,25 +430,6 @@ export class UserController {
         await this.userModel
           .updateMany({ _id: query }, [
             { $set: { accountType: "user", activeStatus: true } },
-          ])
-          .then((data) => {
-            return this.responseInterceptor.sendSuccess(
-              res,
-              "Success fully updated."
-            );
-          })
-          .catch((err) => {
-            this.responseInterceptor.errorResponse(
-              res,
-              400,
-              "db operation failed",
-              err
-            );
-          });
-      } else if (roleType === "admin") {
-        await this.userModel
-          .updateMany({ _id: query }, [
-            { $set: { accountType: "admin", activeStatus: true } },
           ])
           .then((data) => {
             return this.responseInterceptor.sendSuccess(
