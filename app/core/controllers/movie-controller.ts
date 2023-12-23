@@ -11,15 +11,10 @@ export class MovieController {
   }
 
   async createMovie(req, res) {
-    console.log("hhhhhhhhhhhh");
     try {
       const movieData: any = req.body;
-      // const {filename} = req.file.Orginalname;
       console.log("req---------", movieData);
       console.log("sridhar-->", req.file.path);
-      // console.log("filename------->",filename)
-      // return
-      // console.log("sridhar----->",movieData,filename)
       if (!movieData.title) {
         this.responseInterceptor.errorResponse(
           res,
@@ -133,8 +128,7 @@ export class MovieController {
         .toString()
         .split(",")
         .map((cast: string) => cast.trim());
-
-      console.log("generSet------->", GenresSet);
+      
       let newMovie = await new this.movieModel({
         title: movieData.title,
         storyLine: movieData.storyLine,
@@ -155,7 +149,7 @@ export class MovieController {
         req,
         res,
         null,
-        "Successfully Created",
+        "Movie Successfully Created",
         { movie_id: newMovie._id }
       );
     } catch (err) {
@@ -216,7 +210,6 @@ export class MovieController {
         },
         { new: true }
       );
-      console.log("Movies------>", movie);
       res.json(movie);
     } catch (err) {
       return this.responseInterceptor.errorResponse(

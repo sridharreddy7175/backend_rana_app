@@ -67,8 +67,8 @@ export class UserController {
           email: userData.email,
           password: encryptPassword,
           phone: userData.phone,
-          accountType:"admin",
-          activeStatus:true
+          accountType: "admin",
+          activeStatus: true,
         });
       } else {
         // save to db
@@ -129,7 +129,7 @@ export class UserController {
         if (!isPasswordCompared) {
           return this.responseInterceptor.errorResponse(
             res,
-            401,
+            400,
             "Invalid Password",
             ""
           );
@@ -140,12 +140,20 @@ export class UserController {
             let token = await this.authGuard.generateAuthToken(
               userCredentials._id
             );
+            let currentUserData = {
+              id: userCredentials._id,
+              name: userCredentials.name,
+              email: userCredentials.email,
+              phone: userCredentials.phone,
+              accountType: userCredentials.accountType,
+              token: token,
+            };
             return this.responseInterceptor.successResponse(
               req,
               res,
               200,
-              "token generated",
-              token
+              "LoggedIn Successfully",
+              currentUserData
             );
           }
         } else {
@@ -176,15 +184,20 @@ export class UserController {
   async allUserDetails(req, res) {
     try {
       let currentOffset = 0;
-      let pageLimit: any;
+      let pageLimit;
       if (req.query.limit) {
         pageLimit = Number(req.query.limit);
       }
+
       if (req.query.pageno) {
         currentOffset = pageLimit * (req.query.pageno - 1);
       }
-      const result = await this.userModel
-        .find()
+      // Build query based on search term
+      const searchQuery: any = {};
+      if (req.query.search) {
+        searchQuery.name = { $regex: req.query.search, $options: "i" }; // Case-insensitive regex search
+      }
+      const result = await UserModel.find(searchQuery)
         .limit(pageLimit)
         .skip(currentOffset)
         .select("-password");
@@ -414,18 +427,20 @@ export class UserController {
 
   async activeUser(req, res) {
     try {
-      // let email = req.body.email;
       let { roleType, email } = req.body;
       let users: any = await this.userModel.findOne({ email: email });
-      console.log("users", users);
       if (!users.email) {
-        this.responseInterceptor.errorResponse(res, 400, "_id is Required", "");
+        this.responseInterceptor.errorResponse(
+          res,
+          400,
+          "email is Required",
+          ""
+        );
         return;
       }
       const query = {
         _id: new mongoose.Types.ObjectId(users._id),
       };
-      console.log("roletype", roleType);
       if (roleType === "user") {
         await this.userModel
           .updateMany({ _id: query }, [
@@ -454,6 +469,32 @@ export class UserController {
         );
         return;
       }
+    } catch (err) {
+      this.responseInterceptor.errorResponse(
+        res,
+        400,
+        "Failed to remove the user",
+        err
+      );
+    }
+  }
+
+  async roleAccess(req, res) {
+    try {
+      let { roleType, email } = req.body;
+      let users: any = await this.userModel.findOne({ email: email });
+      if (!users.email) {
+        this.responseInterceptor.errorResponse(
+          res,
+          400,
+          "email is Required",
+          ""
+        );
+        return;
+      }
+      const query = {
+        _id: new mongoose.Types.ObjectId(users._id),
+      };
     } catch (err) {
       this.responseInterceptor.errorResponse(
         res,

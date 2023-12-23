@@ -28,7 +28,7 @@ export class PostController {
       }
 
       let photosData = req.files.map((data: any) => {
-        return data.originalname;
+        return data?.originalname;
       });
       console.log("photosData", photosData);
 
@@ -58,29 +58,64 @@ export class PostController {
     }
   }
 
+  // async allmyPosts(req, res) {
+  //   try {
+  //     const posts: any = await this.postModel.find();
+  //     console.log("posts", posts);
+  //     if (!posts) {
+  //       return this.responseInterceptor.errorResponse(
+  //         res,
+  //         400,
+  //         "No Posts Found",
+  //         ""
+  //       );
+  //     }
+  //     return this.responseInterceptor.successResponse(
+  //       req,
+  //       res,
+  //       null,
+  //       "Data found",
+  //       posts
+  //     );
+  //   } catch (err) {
+  //     return this.responseInterceptor.errorResponse(
+  //       res,
+  //       400,
+  //       "Server error",
+  //       err
+  //     );
+  //   }
+  // }
   async allmyPosts(req, res) {
     try {
-      const posts: any = await this.postModel.find();
-      console.log("posts", posts);
-      if (!posts) {
-        return this.responseInterceptor.errorResponse(
-          res,
-          400,
-          "No Posts Found",
-          ""
-        );
+      let currentOffset = 0;
+      let pageLimit;
+      if (req.query.limit) {
+        pageLimit = Number(req.query.limit);
       }
+
+      if (req.query.pageno) {
+        currentOffset = pageLimit * (req.query.pageno - 1);
+      }
+      // Build query based on search term
+      const searchQuery: any = {};
+      if (req.query.search) {
+        searchQuery.story = { $regex: req.query.search, $options: "i" }; // Case-insensitive regex search
+      }
+      const result = await this.postModel.find(searchQuery)
+        .limit(pageLimit)
+        .skip(currentOffset)
       return this.responseInterceptor.successResponse(
         req,
         res,
-        null,
+        200,
         "Data found",
-        posts
+        result
       );
     } catch (err) {
       return this.responseInterceptor.errorResponse(
         res,
-        400,
+        500,
         "Server error",
         err
       );

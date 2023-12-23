@@ -7,6 +7,7 @@ const movie_controller_1 = require("../core/controllers/movie-controller");
 const forgotPassword_controller_1 = require("../core/controllers/forgotPassword-controller");
 const reels_controller_1 = require("../core/controllers/reels-controller");
 const post_controller_1 = require("../core/controllers/post-controller");
+const comment_controller_1 = require("../core/controllers/comment-controller");
 class RoutingComponents {
     constructor() {
         this.responseInterceptor = new response_interceptor_1.ResponseInterceptor();
@@ -15,6 +16,7 @@ class RoutingComponents {
         this.forgotPasswordController = new forgotPassword_controller_1.ForgotPasswordController();
         this.reelsControler = new reels_controller_1.ReelsController();
         this.postController = new post_controller_1.PostController();
+        this.commentsController = new comment_controller_1.CommentsController();
     }
     /**
      *  page not found.
@@ -87,6 +89,15 @@ class RoutingComponents {
     }
     UnLikePost(req, res, next) {
         this.postController.unlikePost(req, res);
+    }
+    CreateComment(req, res, next) {
+        this.commentsController.createComment(req, res);
+    }
+    AllComments(req, res) {
+        this.commentsController.allComments(req, res);
+    }
+    FetchComment(req, res) {
+        this.commentsController.fetchComment(req, res);
     }
 }
 exports.RoutingComponents = RoutingComponents;

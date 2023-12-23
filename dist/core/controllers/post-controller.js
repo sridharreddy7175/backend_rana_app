@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PostController = void 0;
-const post_modle_1 = require("../models/post-modle");
+const post_model_1 = require("../models/post-model");
 const response_interceptor_1 = require("../utillities/response-interceptor");
 const mongoose = require("mongoose");
 class PostController {
     constructor() {
         this.responseInterceptor = new response_interceptor_1.ResponseInterceptor();
-        this.postModel = post_modle_1.PostModel;
+        this.postModel = post_model_1.PostModel;
     }
     createPost(req, res) {
         var _a, _b;

@@ -15,7 +15,7 @@ class Validator {
             next();
         }).catch((error) => {
             // this.sendBadRequest(res, "Payload Validation Failed")
-            return this.responseInterceptor.errorResponse(res, 401, 'Payload Validation Failed', error);
+            return this.responseInterceptor.errorResponse(res, 400, 'Payload Validation Failed', error);
         });
     }
 }

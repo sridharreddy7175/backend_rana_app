@@ -98,7 +98,7 @@ export class ForgotPasswordController {
       } else {
         return this.responseInterceptor.errorResponse(
           res,
-          401,
+          400,
           "user not exist"
         );
       }

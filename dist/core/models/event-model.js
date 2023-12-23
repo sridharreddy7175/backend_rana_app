@@ -3,25 +3,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventSchema = void 0;
 const mongoose_1 = require("mongoose");
 const eventSchema = new mongoose_1.Schema({
-    name: {
+    heroName: {
         type: String,
         required: true,
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    phone: {
+    eventPoster: {
         type: String,
         required: true,
     },
-    accountType: {
+    date: {
+        type: Date,
+    },
+    description: {
         type: Boolean,
         default: false,
     },
-    password: {
-        type: String,
+    tickets: {
+        type: Number,
         required: true,
     },
 }, { timestamps: true });

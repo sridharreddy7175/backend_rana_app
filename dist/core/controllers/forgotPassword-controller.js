@@ -78,7 +78,7 @@ class ForgotPasswordController {
                     return this.responseInterceptor.successResponse(req, res, null, "Successfully Updated your password", { user_id: setnewuserpass._id });
                 }
                 else {
-                    return this.responseInterceptor.errorResponse(res, 401, "user not exist");
+                    return this.responseInterceptor.errorResponse(res, 400, "user not exist");
                 }
             }
             catch (err) {

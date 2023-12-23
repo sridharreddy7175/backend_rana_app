@@ -67,6 +67,20 @@ class AppRoutes {
                     routingComponents.AllMyPosts.bind(routingComponents),
                 ],
             },
+            {
+                path: "/allcomments",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.AllComments.bind(routingComponents),
+                ],
+            },
+            {
+                path: "/comment/:commentId",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.FetchComment.bind(routingComponents),
+                ],
+            },
             //  todo remove after data fatech done..
             // 404
             {
@@ -132,6 +146,13 @@ class AppRoutes {
                     // this.validator.validateBodyPayload.bind(this.validator, userSchema),
                     upload.array("photos"),
                     routingComponents.CreatePost.bind(routingComponents),
+                ],
+            },
+            {
+                path: "/create/comment",
+                component: [
+                    this.authGuard.authCheck.bind(this.authGuard),
+                    routingComponents.CreateComment.bind(routingComponents),
                 ],
             },
         ];

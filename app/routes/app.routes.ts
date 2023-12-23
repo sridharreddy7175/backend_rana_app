@@ -214,7 +214,7 @@ export class AppRoutes {
       {
         path: "/activeuser",
         component: [
-          // this.authGuard.authCheck.bind(this.authGuard),
+          this.authGuard.authCheck.bind(this.authGuard),
           routingComponents.ActiveUser.bind(routingComponents),
         ],
       },

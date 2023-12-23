@@ -15,7 +15,6 @@ const user_model_1 = require("../models/user-model");
 const response_interceptor_1 = require("../utillities/response-interceptor");
 const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
-const sgMail = require("@sendgrid/mail");
 class UserController {
     constructor() {
         this.userModel = user_model_1.UserModel;
@@ -46,13 +45,26 @@ class UserController {
                 // encrypt the password
                 let salt = yield bcrypt.genSalt(10);
                 let encryptPassword = yield bcrypt.hash(userData.password, salt);
-                // save to db
-                let saveduser = new this.userModel({
-                    name: userData.name,
-                    email: userData.email,
-                    password: encryptPassword,
-                    phone: userData.phone,
-                });
+                let saveduser;
+                if (userData.accountType && userData.accountType === "admin") {
+                    saveduser = new this.userModel({
+                        name: userData.name,
+                        email: userData.email,
+                        password: encryptPassword,
+                        phone: userData.phone,
+                        accountType: "admin",
+                        activeStatus: true
+                    });
+                }
+                else {
+                    // save to db
+                    saveduser = new this.userModel({
+                        name: userData.name,
+                        email: userData.email,
+                        password: encryptPassword,
+                        phone: userData.phone,
+                    });
+                }
                 saveduser = yield saveduser.save();
                 return this.responseInterceptor.successResponse(req, res, null, "Successfully Created", { user_id: saveduser._id });
             }
@@ -78,7 +90,7 @@ class UserController {
                     // check if the password is correct
                     let isPasswordCompared = yield bcrypt.compare(password, userCredentials.password);
                     if (!isPasswordCompared) {
-                        return this.responseInterceptor.errorResponse(res, 401, "Invalid Password", "");
+                        return this.responseInterceptor.errorResponse(res, 400, "Invalid Password", "");
                     }
                     if (userCredentials.activeStatus) {
                         if (isPasswordCompared) {
@@ -271,18 +283,6 @@ class UserController {
                     yield this.userModel
                         .updateMany({ _id: query }, [
                         { $set: { accountType: "user", activeStatus: true } },
-                    ])
-                        .then((data) => {
-                        return this.responseInterceptor.sendSuccess(res, "Success fully updated.");
-                    })
-                        .catch((err) => {
-                        this.responseInterceptor.errorResponse(res, 400, "db operation failed", err);
-                    });
-                }
-                else if (roleType === "admin") {
-                    yield this.userModel
-                        .updateMany({ _id: query }, [
-                        { $set: { accountType: "admin", activeStatus: true } },
                     ])
                         .then((data) => {
                         return this.responseInterceptor.sendSuccess(res, "Success fully updated.");
