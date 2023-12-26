@@ -128,7 +128,7 @@ export class MovieController {
         .toString()
         .split(",")
         .map((cast: string) => cast.trim());
-      
+
       let newMovie = await new this.movieModel({
         title: movieData.title,
         storyLine: movieData.storyLine,
@@ -162,25 +162,70 @@ export class MovieController {
     }
   }
 
+  // async moviesList(req, res) {
+  //   try {
+  //     let currentOffset = 0;
+  //     let pageLimit: any;
+  //     if (req.query.limit) {
+  //       pageLimit = Number(req.query.limit);
+  //     }
+  //     if (req.query.pageno) {
+  //       currentOffset = pageLimit * (req.query.pageno - 1);
+  //     }
+  //     let result: any;
+  //     result = await this.movieModel
+  //       .find()
+  //       .sort("-createdAt")
+  //       .limit(pageLimit)
+  //       .skip(currentOffset);
+  //      if(req.query.datatype?.toLowerCase() === 'top'){
+  //       result=await this.movieModel.find().sort({ numViews: -1 })
+  //      }
+  //     return this.responseInterceptor.successResponse(
+  //       req,
+  //       res,
+  //       200,
+  //       "Data found",
+  //       result
+  //     );
+  //   } catch (err) {
+  //     return this.responseInterceptor.errorResponse(
+  //       res,
+  //       500,
+  //       "Server error",
+  //       err
+  //     );
+  //   }
+  // }
+
   async moviesList(req, res) {
     try {
       let currentOffset = 0;
-      let pageLimit: any;
+      let pageLimit;
       if (req.query.limit) {
         pageLimit = Number(req.query.limit);
       }
+
       if (req.query.pageno) {
         currentOffset = pageLimit * (req.query.pageno - 1);
       }
+      // Build query based on search term
+      const searchQuery: any = {};
+      if (req.query.search) {
+        searchQuery.title = { $regex: req.query.search, $options: "i" }; // Case-insensitive regex search
+      }
+
       let result: any;
+
       result = await this.movieModel
-        .find()
-        .sort("-createdAt")
+        .find(searchQuery)
         .limit(pageLimit)
         .skip(currentOffset);
-       if(req.query.datatype?.toLowerCase() === 'top'){
-        result=await this.movieModel.find().sort({ numViews: -1 })
-       }
+
+      if (req.query.datatype?.toLowerCase() === "top") {
+        result = await this.movieModel.find().sort({ numViews: -1 });
+      }
+
       return this.responseInterceptor.successResponse(
         req,
         res,
