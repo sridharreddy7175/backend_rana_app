@@ -112,7 +112,6 @@ export class UserController {
         let userCredentials: any = await this.userModel.findOne({
           email: email,
         });
-        console.log("userCreditions", userCredentials.activeStatus);
         if (!userCredentials) {
           return this.responseInterceptor.errorResponse(
             res,
@@ -135,7 +134,7 @@ export class UserController {
           );
         }
 
-        if (userCredentials.activeStatus) {
+        if (userCredentials?.activeStatus) {
           if (isPasswordCompared) {
             let token = await this.authGuard.generateAuthToken(
               userCredentials._id
@@ -345,7 +344,6 @@ export class UserController {
     try {
       const { followId } = req.body;
       const loginUserId = req?.user?._conditions?._id;
-      console.log("loginUserId", loginUserId);
 
       //find the target user and check if the login id exist
       const targetUser: any = await this.userModel.findById(followId);
@@ -427,7 +425,7 @@ export class UserController {
 
   async activeUser(req, res) {
     try {
-      let { roleType, email } = req.body;
+      let { email } = req.body;
       let users: any = await this.userModel.findOne({ email: email });
       if (!users.email) {
         this.responseInterceptor.errorResponse(
@@ -441,15 +439,55 @@ export class UserController {
       const query = {
         _id: new mongoose.Types.ObjectId(users._id),
       };
-      if (roleType === "user") {
+      await this.userModel
+        .updateMany({ _id: query }, [{ $set: { activeStatus: true } }])
+        .then((data) => {
+          return this.responseInterceptor.sendSuccess(
+            res,
+            "Success fully Actived."
+          );
+        })
+        .catch((err) => {
+          this.responseInterceptor.errorResponse(
+            res,
+            400,
+            "db operation failed",
+            err
+          );
+        });
+    } catch (err) {
+      this.responseInterceptor.errorResponse(
+        res,
+        400,
+        "Failed to remove the user",
+        err
+      );
+    }
+  }
+
+  async roleAccess(req, res) {
+    try {
+      let { accountType, email } = req.body;
+      let users: any = await this.userModel.findOne({ email: email });
+      if (!users.email) {
+        this.responseInterceptor.errorResponse(
+          res,
+          400,
+          "email is Required",
+          ""
+        );
+        return;
+      }
+      const query = {
+        _id: new mongoose.Types.ObjectId(users._id),
+      };
+      if (accountType) {
         await this.userModel
-          .updateMany({ _id: query }, [
-            { $set: { accountType: "user", activeStatus: true } },
-          ])
+          .updateMany({ _id: query }, [{ $set: { accountType: accountType } }])
           .then((data) => {
             return this.responseInterceptor.sendSuccess(
               res,
-              "Success fully updated."
+              "Role is Success fully updated."
             );
           })
           .catch((err) => {
@@ -465,7 +503,7 @@ export class UserController {
           res,
           400,
           "Failed to  the update role",
-          roleType
+          accountType
         );
         return;
       }
@@ -479,22 +517,41 @@ export class UserController {
     }
   }
 
-  async roleAccess(req, res) {
+  async suggestionsUser(req, res) {
     try {
-      let { roleType, email } = req.body;
-      let users: any = await this.userModel.findOne({ email: email });
-      if (!users.email) {
-        this.responseInterceptor.errorResponse(
-          res,
-          400,
-          "email is Required",
-          ""
-        );
-        return;
-      }
-      const query = {
-        _id: new mongoose.Types.ObjectId(users._id),
-      };
+      console.log("req===>",req.user)
+      // const newArr = [...req.user.following, req?.user?._conditions?._id];
+      // console.log("hhhhhh")
+
+      // const num = req.query.num || 10;
+
+      // const users = await this.userModel.aggregate([
+      //   { $match: { _id: { $nin: newArr } } },
+      //   { $sample: { size: Number(num) } },
+      //   {
+      //     $lookup: {
+      //       from: "UserModel",
+      //       localField: "followers",
+      //       foreignField: "_id",
+      //       as: "followers",
+      //     },
+      //   },
+      //   {
+      //     $lookup: {
+      //       from: "UserModel",
+      //       localField: "following",
+      //       foreignField: "_id",
+      //       as: "following",
+      //     },
+      //   },
+      // ]);
+      // return this.responseInterceptor.successResponse(
+      //   req,
+      //   res,
+      //   200,
+      //   "Data found",
+      //   users
+      // );
     } catch (err) {
       this.responseInterceptor.errorResponse(
         res,

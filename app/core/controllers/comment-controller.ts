@@ -23,22 +23,29 @@ export class CommentsController {
 
   async createComment(req, res) {
     try {
-      const { postId, message } = req.body;
       const loginUserId = req?.user?._conditions?._id;
-      const post = await this.postModel.findById(postId);
-      if (!post)
-        return res.status(400).json({ msg: "This post does not exist." });
-
-      const user = await this.userModel.findById(loginUserId);
-      console.log("userId", user.name);
+      const { postId, content, tag } = req.body;
+      let post = await this.postModel.findById(postId);
+      if (!post) {
+        this.responseInterceptor.errorResponse(
+          res,
+          400,
+          "This post does not exist.",
+          ""
+        );
+      }
 
       const newComment = new this.commentModel({
-        userId: loginUserId,
-        message: message,
+        user: loginUserId,
+        content: content,
+        tag: tag,
         postId: postId,
-        userName: user.name,
       });
-      await newComment.save();
+
+      await this.postModel.findOneAndUpdate({_id: postId}, {
+        $push: {comments: newComment._id}
+    }, {new: true})
+    await newComment.save()
       return this.responseInterceptor.successResponse(
         req,
         res,
@@ -82,7 +89,7 @@ export class CommentsController {
       );
     }
   }
-  async fetchComment(req,res){
+  async fetchComment(req, res) {
     try {
       const myCommentData = req.params.commentId;
       if (!myCommentData) {
@@ -110,4 +117,102 @@ export class CommentsController {
       return;
     }
   }
+
+  async likeComment(req,res){
+    try{
+      const myCommentData = req.params.commentId;
+      const loginUserId = req?.user?._conditions?._id;
+      const comment: any = await this.commentModel.findById(myCommentData);
+      if (
+        comment?.likes?.filter(
+          (like) => like.user.toString() === loginUserId.toString()
+        ).length > 0
+      ) {
+        this.responseInterceptor.errorResponse(
+          res,
+          500,
+          "Comment has already been liked",
+          ""
+        );
+        return;
+      }
+      comment.likes.unshift({ user: loginUserId });
+      await comment.save(); // save to db
+      return this.responseInterceptor.successResponse(
+        req,
+        res,
+        null,
+        "Data found",
+        comment
+      );
+    }
+    catch(err){
+      return this.responseInterceptor.errorResponse(
+        res,
+        400,
+        "Server error",
+        err
+      );
+    }
+  }
+
+
+  async unlikeComment(req, res) {
+    try {
+      const myCommentData = req.params.commentId;
+      const loginUserId = req?.user?._conditions?._id;
+      const CommentObject = {
+        _id: new mongoose.Types.ObjectId(myCommentData),
+      };
+      const comment: any = await this.commentModel.findById(CommentObject);
+      if (!comment) {
+        this.responseInterceptor.errorResponse(
+          res,
+          400,
+          "No Comments Found for the Comment ID",
+          ""
+        );
+        return;
+      }
+      // check if the user has already been liked
+      if (
+        comment.likes.filter(
+          (like) => like.user.toString() === loginUserId.toString()
+        ).length === 0
+      ) {
+        this.responseInterceptor.errorResponse(
+          res,
+          400,
+          "Comment has not been liked",
+          ""
+        );
+        return;
+      }
+      // unlike the post
+      let removableIndex = comment.likes
+        .map((like) => like.user.toString())
+        .indexOf(loginUserId.toString());
+      if (removableIndex !== -1) {
+        comment.likes.splice(removableIndex, 1);
+        await comment.save(); // save to db
+        return this.responseInterceptor.successResponse(
+          req,
+          res,
+          null,
+          "Data found",
+          comment
+        );
+      }
+    } catch (err) {
+      this.responseInterceptor.errorResponse(
+        res,
+        400,
+        "Failed to remove the Comment",
+        err
+      );
+      return;
+    }
+  }
+
 }
+

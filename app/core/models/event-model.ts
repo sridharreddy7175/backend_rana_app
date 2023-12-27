@@ -1,33 +1,63 @@
 import { model, Schema, Document } from "mongoose";
 
-interface IUser extends Document {
-  heroName: string;
-  email: string;
-  password: string;
-  accountType: boolean;
-  phone: string;
+interface IEvents extends Document {
+  title: string;
+  poster: string;
+  ticketNo: string;
+  orderNo: string;
+  date: any;
+  addresses:any;
+  description:any;
+  tickets:number;
 }
 
-const eventSchema: Schema = new Schema({
-  heroName: {
-    type: String,
-    required: true,
+const eventSchema: Schema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    poster: {
+      type: String,
+      required: true,
+    },
+    ticketNo: {
+      type: String,
+    },
+    orderNo: {
+      type: String,
+    },
+    date: {
+      type: Date,
+    },
+    addresses: [
+      {
+        city: {
+          type: String,
+        },
+        address1: {
+          type: String,
+        },
+        address2: {
+          type: String,
+        },
+        zipCode: {
+          type: Number,
+        },
+        addressType: {
+          type: String,
+        },
+      },
+    ],
+    description: {
+      type: String,
+    },
+    tickets: {
+      type: Number,
+      required: true,
+    },
   },
-  eventPoster: {
-    type: String,
-    required: true,
-  },
-  date: {
-    type: Date,
-  },
-  description: {
-    type: Boolean,
-    default: false,
-  },
-  tickets: {
-    type: Number,
-    required: true,
-  },
-},{timestamps:true});
+  { timestamps: true }
+);
 
-export const EventSchema = model<IUser>("EventModel", eventSchema);
+export const EventModel = model<IEvents>("EventModel", eventSchema);

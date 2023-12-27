@@ -1,7 +1,7 @@
 import { model, Schema, Document } from "mongoose";
 const mongoose = require("mongoose");
 
-interface IComments extends Document {
+interface IReelsComments extends Document {
   content: string;
   tag: object;
   reply: any;
@@ -10,7 +10,7 @@ interface IComments extends Document {
   user: any;
 }
 
-const CommentSchema: Schema = new Schema(
+const ReelsCommentSchema: Schema = new Schema(
   {
     content: {
       type: String,
@@ -23,10 +23,10 @@ const CommentSchema: Schema = new Schema(
       },
     ],
     user: { type: mongoose.Types.ObjectId, ref: "UserModel" },
-    postId: mongoose.Types.ObjectId,
-    reply: [{ type: mongoose.Schema.Types.ObjectId, ref: "ReplyModel" }],
+    reelId: mongoose.Types.ObjectId,
+    // reply: [{ type: mongoose.Schema.Types.ObjectId, ref: "ReplyModel" }],
   },
   { timestamps: true }
 );
 
-export const CommentModel = model<IComments>("CommentModel", CommentSchema);
+export const ReelsCommentModel = model<IReelsComments>("ReelsCommentModel", ReelsCommentSchema);

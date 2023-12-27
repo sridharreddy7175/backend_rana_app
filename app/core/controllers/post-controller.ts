@@ -13,10 +13,7 @@ export class PostController {
   async createPost(req, res) {
     try {
       const postData: any = req.body;
-      console.log("hhhhhhhh", req.files);
-      console.log("lucky", req.files.originalname);
       const loginUserId = req?.user?._conditions?._id;
-      console.log("loginUserId", loginUserId);
       if (!postData.story) {
         this.responseInterceptor.errorResponse(
           res,
@@ -38,7 +35,6 @@ export class PostController {
         story: postData.story,
         photos: photosData,
         share: postData.share,
-        // postedBy:req.user
       });
       savedPosts = await savedPosts.save();
       return this.responseInterceptor.successResponse(
@@ -60,51 +56,51 @@ export class PostController {
 
   // async allmyPosts(req, res) {
   //   try {
-  //     const posts: any = await this.postModel.find();
-  //     console.log("posts", posts);
-  //     if (!posts) {
-  //       return this.responseInterceptor.errorResponse(
-  //         res,
-  //         400,
-  //         "No Posts Found",
-  //         ""
-  //       );
+  //     let currentOffset = 0;
+  //     let pageLimit;
+  //     if (req.query.limit) {
+  //       pageLimit = Number(req.query.limit);
   //     }
+
+  //     if (req.query.pageno) {
+  //       currentOffset = pageLimit * (req.query.pageno - 1);
+  //     }
+  //     // Build query based on search term
+  //     const searchQuery: any = {};
+  //     if (req.query.search) {
+  //       searchQuery.story = { $regex: req.query.search, $options: "i" }; // Case-insensitive regex search
+  //     }
+  //     const result = await this.postModel.find(searchQuery)
+  //       .limit(pageLimit)
+  //       .skip(currentOffset)
   //     return this.responseInterceptor.successResponse(
   //       req,
   //       res,
-  //       null,
+  //       200,
   //       "Data found",
-  //       posts
+  //       result
   //     );
   //   } catch (err) {
   //     return this.responseInterceptor.errorResponse(
   //       res,
-  //       400,
+  //       500,
   //       "Server error",
   //       err
   //     );
   //   }
   // }
+
   async allmyPosts(req, res) {
     try {
-      let currentOffset = 0;
-      let pageLimit;
-      if (req.query.limit) {
-        pageLimit = Number(req.query.limit);
-      }
-
-      if (req.query.pageno) {
-        currentOffset = pageLimit * (req.query.pageno - 1);
-      }
-      // Build query based on search term
-      const searchQuery: any = {};
-      if (req.query.search) {
-        searchQuery.story = { $regex: req.query.search, $options: "i" }; // Case-insensitive regex search
-      }
-      const result = await this.postModel.find(searchQuery)
-        .limit(pageLimit)
-        .skip(currentOffset)
+      const userId = req?.user?._conditions?._id;
+      const query = { user: userId };
+      const result = await this.postModel
+        .find(query)
+        .sort("-createdAt")
+        .populate({
+          path: "comments",
+          model: "CommentModel",
+        });
       return this.responseInterceptor.successResponse(
         req,
         res,
@@ -125,19 +121,18 @@ export class PostController {
   async likePost(req, res) {
     try {
       const myPostData = req.params.postId;
-      console.log("myPOstdata", myPostData);
+      console.log("myPostData", myPostData);
       const loginUserId = req?.user?._conditions?._id;
-      console.log("loginUserId", loginUserId);
       const PostObject = {
         _id: new mongoose.Types.ObjectId(myPostData),
       };
       const post: any = await this.postModel.findById(PostObject);
-      console.log("myPostData", post);
-      if (!post) {
-      }
+      // console.log("posyttt",post)
+      // if (!post) {
+      // }
       // check if the user has already been liked
       if (
-        post.likes.filter(
+        post?.likes?.filter(
           (like) => like.user.toString() === loginUserId.toString()
         ).length > 0
       ) {
@@ -173,14 +168,11 @@ export class PostController {
   async unlikePost(req, res) {
     try {
       const myPostData = req.params.postId;
-      console.log("myPOstdata", myPostData);
       const loginUserId = req?.user?._conditions?._id;
-      console.log("loginUserId", loginUserId);
       const PostObject = {
         _id: new mongoose.Types.ObjectId(myPostData),
       };
       const post: any = await this.postModel.findById(PostObject);
-      console.log("myPostData", post);
       if (!post) {
         this.responseInterceptor.errorResponse(
           res,
@@ -211,9 +203,13 @@ export class PostController {
       if (removableIndex !== -1) {
         post.likes.splice(removableIndex, 1);
         await post.save(); // save to db
-        res.status(200).json({
-          post: post,
-        });
+        return this.responseInterceptor.successResponse(
+          req,
+          res,
+          null,
+          "Data found",
+          post
+        );
       }
     } catch (err) {
       this.responseInterceptor.errorResponse(
@@ -229,7 +225,6 @@ export class PostController {
   async myPost(req, res) {
     try {
       const myPostData = req.params.id;
-      console.log("myPostData", myPostData);
       if (!myPostData) {
         this.responseInterceptor.errorResponse(res, 400, "_id is Required", "");
         return;

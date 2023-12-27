@@ -6,26 +6,36 @@ interface IReels extends Document {
   videoUrl: string;
   share: string;
   tags: any;
+  user: any;
+  likes: any;
+  comments: any;
 }
 
 const ReelsSchema: Schema = new Schema(
   {
-   videoUrl:{
-    type:String,
-    required:true
-   },
-   like:{
-    type:String,
-   },
-   share:{
-    type:String,
-   },
-   comment:{
-    type:String,
-   },
-   tags:{
-    type:Array
-   }
+    videoUrl: {
+      type: String,
+      required: true,
+    },
+    share: {
+      type: String,
+    },
+    tags: {
+      type: Array,
+    },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserModel",
+      required: true,
+    },
+    likes: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" },
+      },
+    ],
+    comments: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "ReelsCommentModel" },
+    ],
   },
   { timestamps: true }
 );

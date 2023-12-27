@@ -1,7 +1,7 @@
 import { model, Schema, Document } from "mongoose";
 const mongoose = require("mongoose");
 
-interface IPost extends Document {
+interface IReply extends Document {
   story: string;
   photos: string;
   likes: string;
@@ -10,7 +10,7 @@ interface IPost extends Document {
   share: string;
 }
 
-const postSchema: Schema = new Schema(
+const ReplySchema: Schema = new Schema(
   {
     story: {
       type: String,
@@ -34,4 +34,4 @@ const postSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-export const PostModel = model<IPost>("PostModel", postSchema);
+export const ReplyModel = model<IReply>("ReplyModel", ReplySchema);

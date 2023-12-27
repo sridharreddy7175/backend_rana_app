@@ -39,6 +39,13 @@ export class AppRoutes {
         ],
       },
       {
+        path: "/suggestionsUser",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.SuggestionsUser.bind(routingComponents),
+        ],
+      },
+      {
         path: "/user/pwd-reset-link/:id",
         component: [
           this.authGuard.authCheck.bind(this.authGuard), //Auth Check
@@ -142,6 +149,13 @@ export class AppRoutes {
           routingComponents.CreateReels.bind(routingComponents),
         ],
       },
+      {
+        path: "/create/reel/comment",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard),
+          routingComponents.CreateReelComment.bind(routingComponents),
+        ],
+      },
 
       // CreateMovie
       {
@@ -165,10 +179,21 @@ export class AppRoutes {
         ],
       },
       {
-        path: "/create/comment",
+        path: "/create/post/comment",
         component: [
           this.authGuard.authCheck.bind(this.authGuard),
           routingComponents.CreateComment.bind(routingComponents),
+        ],
+      },
+
+      // Create Event
+      {
+        path: "/create/event",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard),
+          // this.validator.validateBodyPayload.bind(this.validator, userSchema),
+          upload.single("poster"),
+          routingComponents.CreateEvent.bind(routingComponents),
         ],
       },
     ];
@@ -198,6 +223,35 @@ export class AppRoutes {
         ],
       },
       {
+        path: "/like/comment/:commentId",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.LikeComment.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/unlike/comment/:commentId",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.UnLikeComment.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/like/reel/:reelId",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.LikeReels.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/unlike/reel/:reelId",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.UnLikeReels.bind(routingComponents),
+        ],
+      },
+
+      {
         path: "/follow",
         component: [
           this.authGuard.authCheck.bind(this.authGuard),
@@ -216,6 +270,13 @@ export class AppRoutes {
         component: [
           this.authGuard.authCheck.bind(this.authGuard),
           routingComponents.ActiveUser.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/roleaccess",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard),
+          routingComponents.RoleAccess.bind(routingComponents),
         ],
       },
     ];

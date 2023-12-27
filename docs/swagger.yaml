@@ -107,6 +107,59 @@ paths:
           description: Server error.
         default:
           description: Unexpected error
+  /activeuser:
+    put:
+      tags:
+        - User API
+      post:
+      requestBody:
+        required: true
+        content:
+          # multipart/form-data:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: sridhar@gmail.com
+      responses:
+        "200":
+          description: Success fully Actived.
+        "400":
+          description: User Details is Required.
+        "404":
+          description: Server error.
+        default:
+          description: Unexpected error
+  /roleaccess:
+    put:
+      tags:
+        - User API
+      post:
+      requestBody:
+        required: true
+        content:
+          # multipart/form-data:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: sridhar@gmail.com
+                accountType:
+                  type: string
+                  example: user
+      responses:
+        "200":
+          description: Role is Success fully updated.
+        "400":
+          description: User Details is Required.
+        "404":
+          description: Server error.
+        default:
+          description: Unexpected error
   /allUserDetails:
     get:
       tags:
@@ -311,7 +364,44 @@ paths:
           description: Server error.
         default:
           description: Unexpected error
-        paths:
+  /like/{postId}:
+    put:
+      tags:
+        - Posts API
+    parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: integer
+        responses:
+          "200":
+            description: Registration is Success.
+          "400":
+            description: User Details is Required.
+          "404":
+            description: Server error.
+          default:
+            description: Unexpected error
+  /unlike/{postId}:
+    put:
+      tags:
+        - Posts API
+    parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: integer
+        responses:
+          "200":
+            description: Registration is Success.
+          "400":
+            description: User Details is Required.
+          "404":
+            description: Server error.
+          default:
+            description: Unexpected error            
   /create/movie:
     post:
       tags:
@@ -321,56 +411,58 @@ paths:
         required: true
         content:
           multipart/form-data:
-            #  application/json:
             schema:
               type: object
               properties:
-                name:
+                title:
                   type: string
                   example: "sridhar"
-                phone:
-                  type: string
+                poster:
+                  type: file
                   example: "9491908107"
-                email:
+                storyLine:
                   type: string
-                  example: "sridhar@gmail.com"
-                password:
+                  example: "sridhar"
+                director:
                   type: string
-                  example: "Sridhar1247@"
+                  example: "sridhar"
+                type:
+                  type: string
+                  example: "sridhar"
+                releseDate:
+                  type: date
+                  example: "2023-05-25"
+                genres:
+                  type: array
+                  example: ['comedy','action']
+                tags:
+                  type: array
+                  example: ['#films','#action']
+                cast:
+                  type: array
+                  example: ['Rana','JrNtr']
+                trailer:
+                  type: string
+                  example: "https://www.youtube.com/watch?v=dhMlXoTD3mQ"
+                imbRating:
+                  type: string
+                  example: "8.6"
+                language:
+                  type: array
+                  example: ['Telugu','Hindi']
       responses:
         "200":
-          description: Registration is Success.
+          description: Successfully Created.
         "400":
           description: User Details is Required.
         "404":
           description: Server error.
         default:
           description: Unexpected error
-  /update/movie:
-    put:
+  /allMoviesLists:
+    get:
       tags:
         - Movies API
-      post:
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            #  application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: "sridhar"
-                phone:
-                  type: string
-                  example: "9491908107"
-                email:
-                  type: string
-                  example: "sridhar@gmail.com"
-                password:
-                  type: string
-                  example: "Sridhar1247@"
       responses:
         "200":
           description: Registration is Success.
@@ -380,7 +472,6 @@ paths:
           description: Server error.
         default:
           description: Unexpected error
-        paths:
   /create/reel:
     post:
       tags:
