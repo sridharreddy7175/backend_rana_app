@@ -19,15 +19,10 @@ class MovieController {
     }
     createMovie(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("hhhhhhhhhhhh");
             try {
                 const movieData = req.body;
-                // const {filename} = req.file.Orginalname;
                 console.log("req---------", movieData);
                 console.log("sridhar-->", req.file.path);
-                // console.log("filename------->",filename)
-                // return
-                // console.log("sridhar----->",movieData,filename)
                 if (!movieData.title) {
                     this.responseInterceptor.errorResponse(res, 400, "title is Required", "");
                 }
@@ -85,7 +80,6 @@ class MovieController {
                     .toString()
                     .split(",")
                     .map((cast) => cast.trim());
-                console.log("generSet------->", GenresSet);
                 let newMovie = yield new this.movieModel({
                     title: movieData.title,
                     storyLine: movieData.storyLine,
@@ -102,13 +96,48 @@ class MovieController {
                     language: LanuageSet,
                 });
                 newMovie = yield newMovie.save();
-                return this.responseInterceptor.successResponse(req, res, null, "Successfully Created", { movie_id: newMovie._id });
+                return this.responseInterceptor.successResponse(req, res, null, "Movie Successfully Created", { movie_id: newMovie._id });
             }
             catch (err) {
                 return this.responseInterceptor.errorResponse(res, 400, "Server error", err);
             }
         });
     }
+    // async moviesList(req, res) {
+    //   try {
+    //     let currentOffset = 0;
+    //     let pageLimit: any;
+    //     if (req.query.limit) {
+    //       pageLimit = Number(req.query.limit);
+    //     }
+    //     if (req.query.pageno) {
+    //       currentOffset = pageLimit * (req.query.pageno - 1);
+    //     }
+    //     let result: any;
+    //     result = await this.movieModel
+    //       .find()
+    //       .sort("-createdAt")
+    //       .limit(pageLimit)
+    //       .skip(currentOffset);
+    //      if(req.query.datatype?.toLowerCase() === 'top'){
+    //       result=await this.movieModel.find().sort({ numViews: -1 })
+    //      }
+    //     return this.responseInterceptor.successResponse(
+    //       req,
+    //       res,
+    //       200,
+    //       "Data found",
+    //       result
+    //     );
+    //   } catch (err) {
+    //     return this.responseInterceptor.errorResponse(
+    //       res,
+    //       500,
+    //       "Server error",
+    //       err
+    //     );
+    //   }
+    // }
     moviesList(req, res) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -121,13 +150,17 @@ class MovieController {
                 if (req.query.pageno) {
                     currentOffset = pageLimit * (req.query.pageno - 1);
                 }
+                // Build query based on search term
+                const searchQuery = {};
+                if (req.query.search) {
+                    searchQuery.title = { $regex: req.query.search, $options: "i" }; // Case-insensitive regex search
+                }
                 let result;
                 result = yield this.movieModel
-                    .find()
-                    .sort("-createdAt")
+                    .find(searchQuery)
                     .limit(pageLimit)
                     .skip(currentOffset);
-                if (((_a = req.query.datatype) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === 'top') {
+                if (((_a = req.query.datatype) === null || _a === void 0 ? void 0 : _a.toLowerCase()) === "top") {
                     result = yield this.movieModel.find().sort({ numViews: -1 });
                 }
                 return this.responseInterceptor.successResponse(req, res, 200, "Data found", result);
@@ -146,7 +179,6 @@ class MovieController {
                 yield this.movieModel.findByIdAndUpdate(id, {
                     $inc: { numViews: 1 },
                 }, { new: true });
-                console.log("Movies------>", movie);
                 res.json(movie);
             }
             catch (err) {

@@ -53,7 +53,7 @@ class UserController {
                         password: encryptPassword,
                         phone: userData.phone,
                         accountType: "admin",
-                        activeStatus: true
+                        activeStatus: true,
                     });
                 }
                 else {
@@ -83,7 +83,6 @@ class UserController {
                     let userCredentials = yield this.userModel.findOne({
                         email: email,
                     });
-                    console.log("userCreditions", userCredentials.activeStatus);
                     if (!userCredentials) {
                         return this.responseInterceptor.errorResponse(res, 400, "Invalid credentials.", "");
                     }
@@ -92,10 +91,18 @@ class UserController {
                     if (!isPasswordCompared) {
                         return this.responseInterceptor.errorResponse(res, 400, "Invalid Password", "");
                     }
-                    if (userCredentials.activeStatus) {
+                    if (userCredentials === null || userCredentials === void 0 ? void 0 : userCredentials.activeStatus) {
                         if (isPasswordCompared) {
                             let token = yield this.authGuard.generateAuthToken(userCredentials._id);
-                            return this.responseInterceptor.successResponse(req, res, 200, "token generated", token);
+                            let currentUserData = {
+                                id: userCredentials._id,
+                                name: userCredentials.name,
+                                email: userCredentials.email,
+                                phone: userCredentials.phone,
+                                accountType: userCredentials.accountType,
+                                token: token,
+                            };
+                            return this.responseInterceptor.successResponse(req, res, 200, "LoggedIn Successfully", currentUserData);
                         }
                     }
                     else {
@@ -122,8 +129,12 @@ class UserController {
                 if (req.query.pageno) {
                     currentOffset = pageLimit * (req.query.pageno - 1);
                 }
-                const result = yield this.userModel
-                    .find()
+                // Build query based on search term
+                const searchQuery = {};
+                if (req.query.search) {
+                    searchQuery.name = { $regex: req.query.search, $options: "i" }; // Case-insensitive regex search
+                }
+                const result = yield user_model_1.UserModel.find(searchQuery)
                     .limit(pageLimit)
                     .skip(currentOffset)
                     .select("-password");
@@ -221,7 +232,6 @@ class UserController {
             try {
                 const { followId } = req.body;
                 const loginUserId = (_b = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._conditions) === null || _b === void 0 ? void 0 : _b._id;
-                console.log("loginUserId", loginUserId);
                 //find the target user and check if the login id exist
                 const targetUser = yield this.userModel.findById(followId);
                 const alreadyFollowing = (_c = targetUser === null || targetUser === void 0 ? void 0 : targetUser.followers) === null || _c === void 0 ? void 0 : _c.find((user) => (user === null || user === void 0 ? void 0 : user.toString()) === loginUserId.toString());
@@ -267,34 +277,95 @@ class UserController {
     activeUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // let email = req.body.email;
-                let { roleType, email } = req.body;
+                let { email } = req.body;
                 let users = yield this.userModel.findOne({ email: email });
-                console.log("users", users);
                 if (!users.email) {
-                    this.responseInterceptor.errorResponse(res, 400, "_id is Required", "");
+                    this.responseInterceptor.errorResponse(res, 400, "email is Required", "");
                     return;
                 }
                 const query = {
                     _id: new mongoose.Types.ObjectId(users._id),
                 };
-                console.log("roletype", roleType);
-                if (roleType === "user") {
+                yield this.userModel
+                    .updateMany({ _id: query }, [{ $set: { activeStatus: true } }])
+                    .then((data) => {
+                    return this.responseInterceptor.sendSuccess(res, "Success fully Actived.");
+                })
+                    .catch((err) => {
+                    this.responseInterceptor.errorResponse(res, 400, "db operation failed", err);
+                });
+            }
+            catch (err) {
+                this.responseInterceptor.errorResponse(res, 400, "Failed to remove the user", err);
+            }
+        });
+    }
+    roleAccess(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let { accountType, email } = req.body;
+                let users = yield this.userModel.findOne({ email: email });
+                if (!users.email) {
+                    this.responseInterceptor.errorResponse(res, 400, "email is Required", "");
+                    return;
+                }
+                const query = {
+                    _id: new mongoose.Types.ObjectId(users._id),
+                };
+                if (accountType) {
                     yield this.userModel
-                        .updateMany({ _id: query }, [
-                        { $set: { accountType: "user", activeStatus: true } },
-                    ])
+                        .updateMany({ _id: query }, [{ $set: { accountType: accountType } }])
                         .then((data) => {
-                        return this.responseInterceptor.sendSuccess(res, "Success fully updated.");
+                        return this.responseInterceptor.sendSuccess(res, "Role is Success fully updated.");
                     })
                         .catch((err) => {
                         this.responseInterceptor.errorResponse(res, 400, "db operation failed", err);
                     });
                 }
                 else {
-                    this.responseInterceptor.errorResponse(res, 400, "Failed to  the update role", roleType);
+                    this.responseInterceptor.errorResponse(res, 400, "Failed to  the update role", accountType);
                     return;
                 }
+            }
+            catch (err) {
+                this.responseInterceptor.errorResponse(res, 400, "Failed to remove the user", err);
+            }
+        });
+    }
+    suggestionsUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log("req===>", req.user);
+                // const newArr = [...req.user.following, req?.user?._conditions?._id];
+                // console.log("hhhhhh")
+                // const num = req.query.num || 10;
+                // const users = await this.userModel.aggregate([
+                //   { $match: { _id: { $nin: newArr } } },
+                //   { $sample: { size: Number(num) } },
+                //   {
+                //     $lookup: {
+                //       from: "UserModel",
+                //       localField: "followers",
+                //       foreignField: "_id",
+                //       as: "followers",
+                //     },
+                //   },
+                //   {
+                //     $lookup: {
+                //       from: "UserModel",
+                //       localField: "following",
+                //       foreignField: "_id",
+                //       as: "following",
+                //     },
+                //   },
+                // ]);
+                // return this.responseInterceptor.successResponse(
+                //   req,
+                //   res,
+                //   200,
+                //   "Data found",
+                //   users
+                // );
             }
             catch (err) {
                 this.responseInterceptor.errorResponse(res, 400, "Failed to remove the user", err);

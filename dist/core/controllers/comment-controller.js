@@ -28,19 +28,21 @@ class CommentsController {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { postId, message } = req.body;
                 const loginUserId = (_b = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._conditions) === null || _b === void 0 ? void 0 : _b._id;
-                const post = yield this.postModel.findById(postId);
-                if (!post)
-                    return res.status(400).json({ msg: "This post does not exist." });
-                const user = yield this.userModel.findById(loginUserId);
-                console.log("userId", user.name);
+                const { postId, content, tag } = req.body;
+                let post = yield this.postModel.findById(postId);
+                if (!post) {
+                    this.responseInterceptor.errorResponse(res, 400, "This post does not exist.", "");
+                }
                 const newComment = new this.commentModel({
-                    userId: loginUserId,
-                    message: message,
+                    user: loginUserId,
+                    content: content,
+                    tag: tag,
                     postId: postId,
-                    userName: user.name,
                 });
+                yield this.postModel.findOneAndUpdate({ _id: postId }, {
+                    $push: { comments: newComment._id }
+                }, { new: true });
                 yield newComment.save();
                 return this.responseInterceptor.successResponse(req, res, null, "Comment is Created", newComment);
             }
@@ -76,6 +78,61 @@ class CommentsController {
                 };
                 const response = yield this.commentModel.findById(CommentObject);
                 return this.responseInterceptor.successResponse(req, res, null, "Data found", response);
+            }
+            catch (err) {
+                this.responseInterceptor.errorResponse(res, 400, "Failed to remove the Comment", err);
+                return;
+            }
+        });
+    }
+    likeComment(req, res) {
+        var _a, _b, _c;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const myCommentData = req.params.commentId;
+                const loginUserId = (_b = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._conditions) === null || _b === void 0 ? void 0 : _b._id;
+                const comment = yield this.commentModel.findById(myCommentData);
+                if (((_c = comment === null || comment === void 0 ? void 0 : comment.likes) === null || _c === void 0 ? void 0 : _c.filter((like) => like.user.toString() === loginUserId.toString()).length) > 0) {
+                    this.responseInterceptor.errorResponse(res, 500, "Comment has already been liked", "");
+                    return;
+                }
+                comment.likes.unshift({ user: loginUserId });
+                yield comment.save(); // save to db
+                return this.responseInterceptor.successResponse(req, res, null, "Data found", comment);
+            }
+            catch (err) {
+                return this.responseInterceptor.errorResponse(res, 400, "Server error", err);
+            }
+        });
+    }
+    unlikeComment(req, res) {
+        var _a, _b;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const myCommentData = req.params.commentId;
+                const loginUserId = (_b = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._conditions) === null || _b === void 0 ? void 0 : _b._id;
+                const CommentObject = {
+                    _id: new mongoose_1.default.Types.ObjectId(myCommentData),
+                };
+                const comment = yield this.commentModel.findById(CommentObject);
+                if (!comment) {
+                    this.responseInterceptor.errorResponse(res, 400, "No Comments Found for the Comment ID", "");
+                    return;
+                }
+                // check if the user has already been liked
+                if (comment.likes.filter((like) => like.user.toString() === loginUserId.toString()).length === 0) {
+                    this.responseInterceptor.errorResponse(res, 400, "Comment has not been liked", "");
+                    return;
+                }
+                // unlike the post
+                let removableIndex = comment.likes
+                    .map((like) => like.user.toString())
+                    .indexOf(loginUserId.toString());
+                if (removableIndex !== -1) {
+                    comment.likes.splice(removableIndex, 1);
+                    yield comment.save(); // save to db
+                    return this.responseInterceptor.successResponse(req, res, null, "Data found", comment);
+                }
             }
             catch (err) {
                 this.responseInterceptor.errorResponse(res, 400, "Failed to remove the Comment", err);

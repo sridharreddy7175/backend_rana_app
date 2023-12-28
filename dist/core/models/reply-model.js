@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PostModel = void 0;
+exports.ReplyModel = void 0;
 const mongoose_1 = require("mongoose");
 const mongoose = require("mongoose");
-const postSchema = new mongoose_1.Schema({
+const ReplySchema = new mongoose_1.Schema({
     story: {
         type: String,
         required: true,
@@ -23,5 +23,5 @@ const postSchema = new mongoose_1.Schema({
         type: String,
     },
 }, { timestamps: true });
-exports.PostModel = (0, mongoose_1.model)("PostModel", postSchema);
-//# sourceMappingURL=post-model.js.map
+exports.ReplyModel = (0, mongoose_1.model)("ReplyModel", ReplySchema);
+//# sourceMappingURL=reply-model.js.map

@@ -8,6 +8,7 @@ const forgotPassword_controller_1 = require("../core/controllers/forgotPassword-
 const reels_controller_1 = require("../core/controllers/reels-controller");
 const post_controller_1 = require("../core/controllers/post-controller");
 const comment_controller_1 = require("../core/controllers/comment-controller");
+const event_controller_1 = require("../core/controllers/event-controller");
 class RoutingComponents {
     constructor() {
         this.responseInterceptor = new response_interceptor_1.ResponseInterceptor();
@@ -17,6 +18,7 @@ class RoutingComponents {
         this.reelsControler = new reels_controller_1.ReelsController();
         this.postController = new post_controller_1.PostController();
         this.commentsController = new comment_controller_1.CommentsController();
+        this.eventController = new event_controller_1.EventController();
     }
     /**
      *  page not found.
@@ -39,6 +41,9 @@ class RoutingComponents {
     DeleteUser(req, res, next) {
         this.userController.deleteUser(req, res);
     }
+    SuggestionsUser(req, res) {
+        this.userController.suggestionsUser(req, res);
+    }
     AllUserDetails(req, res) {
         this.userController.allUserDetails(req, res);
     }
@@ -57,6 +62,9 @@ class RoutingComponents {
     ActiveUser(req, res) {
         this.userController.activeUser(req, res);
     }
+    RoleAccess(req, res) {
+        this.userController.roleAccess(req, res);
+    }
     // Movie Apis
     CreateMovie(req, res, next) {
         this.movieController.createMovie(req, res);
@@ -73,6 +81,15 @@ class RoutingComponents {
     }
     AllReelDetails(req, res, next) {
         this.reelsControler.allReelDetails(req, res);
+    }
+    LikeReels(req, res) {
+        this.reelsControler.likeReels(req, res);
+    }
+    UnLikeReels(req, res) {
+        this.reelsControler.unlikeReels(req, res);
+    }
+    CreateReelComment(req, res) {
+        this.reelsControler.createReelComment(req, res);
     }
     // Posts Apis
     CreatePost(req, res, next) {
@@ -98,6 +115,16 @@ class RoutingComponents {
     }
     FetchComment(req, res) {
         this.commentsController.fetchComment(req, res);
+    }
+    LikeComment(req, res) {
+        this.commentsController.likeComment(req, res);
+    }
+    UnLikeComment(req, res) {
+        this.commentsController.unlikeComment(req, res);
+    }
+    // Events Apis
+    CreateEvent(req, res) {
+        this.eventController.createEvent(req, res);
     }
 }
 exports.RoutingComponents = RoutingComponents;

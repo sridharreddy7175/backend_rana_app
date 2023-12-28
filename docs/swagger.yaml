@@ -7,7 +7,7 @@ info:
 servers:
   - url: http://localhost:8850/
     description: Local server
-  - url: https://prod.com/
+  - url: http://13.200.250.93:8850/
     description: Pre Production server
   - url: https://test.com/
     description: Production server

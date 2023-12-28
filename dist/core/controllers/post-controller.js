@@ -23,16 +23,13 @@ class PostController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const postData = req.body;
-                console.log("hhhhhhhh", req.files);
-                console.log("lucky", req.files.originalname);
                 const loginUserId = (_b = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._conditions) === null || _b === void 0 ? void 0 : _b._id;
-                console.log("loginUserId", loginUserId);
                 if (!postData.story) {
                     this.responseInterceptor.errorResponse(res, 400, "story is Required", "");
                     return;
                 }
                 let photosData = req.files.map((data) => {
-                    return data.originalname;
+                    return data === null || data === void 0 ? void 0 : data.originalname;
                 });
                 console.log("photosData", photosData);
                 // save db
@@ -41,7 +38,6 @@ class PostController {
                     story: postData.story,
                     photos: photosData,
                     share: postData.share,
-                    // postedBy:req.user
                 });
                 savedPosts = yield savedPosts.save();
                 return this.responseInterceptor.successResponse(req, res, null, "Successfully Created", { post_id: savedPosts._id });
@@ -51,38 +47,76 @@ class PostController {
             }
         });
     }
+    // async allmyPosts(req, res) {
+    //   try {
+    //     let currentOffset = 0;
+    //     let pageLimit;
+    //     if (req.query.limit) {
+    //       pageLimit = Number(req.query.limit);
+    //     }
+    //     if (req.query.pageno) {
+    //       currentOffset = pageLimit * (req.query.pageno - 1);
+    //     }
+    //     // Build query based on search term
+    //     const searchQuery: any = {};
+    //     if (req.query.search) {
+    //       searchQuery.story = { $regex: req.query.search, $options: "i" }; // Case-insensitive regex search
+    //     }
+    //     const result = await this.postModel.find(searchQuery)
+    //       .limit(pageLimit)
+    //       .skip(currentOffset)
+    //     return this.responseInterceptor.successResponse(
+    //       req,
+    //       res,
+    //       200,
+    //       "Data found",
+    //       result
+    //     );
+    //   } catch (err) {
+    //     return this.responseInterceptor.errorResponse(
+    //       res,
+    //       500,
+    //       "Server error",
+    //       err
+    //     );
+    //   }
+    // }
     allmyPosts(req, res) {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const posts = yield this.postModel.find();
-                console.log("posts", posts);
-                if (!posts) {
-                    return this.responseInterceptor.errorResponse(res, 400, "No Posts Found", "");
-                }
-                return this.responseInterceptor.successResponse(req, res, null, "Data found", posts);
+                const userId = (_b = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._conditions) === null || _b === void 0 ? void 0 : _b._id;
+                const query = { user: userId };
+                const result = yield this.postModel
+                    .find(query)
+                    .sort("-createdAt")
+                    .populate({
+                    path: "comments",
+                    model: "CommentModel",
+                });
+                return this.responseInterceptor.successResponse(req, res, 200, "Data found", result);
             }
             catch (err) {
-                return this.responseInterceptor.errorResponse(res, 400, "Server error", err);
+                return this.responseInterceptor.errorResponse(res, 500, "Server error", err);
             }
         });
     }
     likePost(req, res) {
-        var _a, _b;
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const myPostData = req.params.postId;
-                console.log("myPOstdata", myPostData);
+                console.log("myPostData", myPostData);
                 const loginUserId = (_b = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._conditions) === null || _b === void 0 ? void 0 : _b._id;
-                console.log("loginUserId", loginUserId);
                 const PostObject = {
                     _id: new mongoose.Types.ObjectId(myPostData),
                 };
                 const post = yield this.postModel.findById(PostObject);
-                console.log("myPostData", post);
-                if (!post) {
-                }
+                // console.log("posyttt",post)
+                // if (!post) {
+                // }
                 // check if the user has already been liked
-                if (post.likes.filter((like) => like.user.toString() === loginUserId.toString()).length > 0) {
+                if (((_c = post === null || post === void 0 ? void 0 : post.likes) === null || _c === void 0 ? void 0 : _c.filter((like) => like.user.toString() === loginUserId.toString()).length) > 0) {
                     this.responseInterceptor.errorResponse(res, 500, "Post has already been liked", "");
                     return;
                 }
@@ -102,14 +136,11 @@ class PostController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const myPostData = req.params.postId;
-                console.log("myPOstdata", myPostData);
                 const loginUserId = (_b = (_a = req === null || req === void 0 ? void 0 : req.user) === null || _a === void 0 ? void 0 : _a._conditions) === null || _b === void 0 ? void 0 : _b._id;
-                console.log("loginUserId", loginUserId);
                 const PostObject = {
                     _id: new mongoose.Types.ObjectId(myPostData),
                 };
                 const post = yield this.postModel.findById(PostObject);
-                console.log("myPostData", post);
                 if (!post) {
                     this.responseInterceptor.errorResponse(res, 400, "No Posts Found for the Post ID", "");
                     return;
@@ -126,9 +157,7 @@ class PostController {
                 if (removableIndex !== -1) {
                     post.likes.splice(removableIndex, 1);
                     yield post.save(); // save to db
-                    res.status(200).json({
-                        post: post,
-                    });
+                    return this.responseInterceptor.successResponse(req, res, null, "Data found", post);
                 }
             }
             catch (err) {
@@ -141,7 +170,6 @@ class PostController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const myPostData = req.params.id;
-                console.log("myPostData", myPostData);
                 if (!myPostData) {
                     this.responseInterceptor.errorResponse(res, 400, "_id is Required", "");
                     return;

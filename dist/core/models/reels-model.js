@@ -6,20 +6,27 @@ const mongoose = require("mongoose");
 const ReelsSchema = new mongoose_1.Schema({
     videoUrl: {
         type: String,
-        required: true
-    },
-    like: {
-        type: String,
+        required: true,
     },
     share: {
         type: String,
     },
-    comment: {
-        type: String,
-    },
     tags: {
-        type: Array
-    }
+        type: Array,
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "UserModel",
+        required: true,
+    },
+    likes: [
+        {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" },
+        },
+    ],
+    comments: [
+        { type: mongoose.Schema.Types.ObjectId, ref: "ReelsCommentModel" },
+    ],
 }, { timestamps: true });
 exports.ReelModel = (0, mongoose_1.model)("ReelModel", ReelsSchema);
 //# sourceMappingURL=reels-model.js.map
