@@ -272,13 +272,6 @@ export class AppRoutes {
           routingComponents.ActiveUser.bind(routingComponents),
         ],
       },
-      {
-        path: "/roleaccess",
-        component: [
-          this.authGuard.authCheck.bind(this.authGuard),
-          routingComponents.RoleAccess.bind(routingComponents),
-        ],
-      },
     ];
     /**
      * Delete calls

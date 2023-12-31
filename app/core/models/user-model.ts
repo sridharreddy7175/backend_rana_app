@@ -33,6 +33,7 @@ const userSchema: Schema = new Schema(
       default: "user",
       enum: ["admin", "user"],
     },
+    profileUrl: { type: String },
     activeStatus: {
       type: Boolean,
       default: false,

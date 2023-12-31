@@ -77,6 +77,7 @@ export class UserController {
           email: userData.email,
           password: encryptPassword,
           phone: userData.phone,
+          accountType: userData.accountType,
         });
       }
 
@@ -196,16 +197,22 @@ export class UserController {
       if (req.query.search) {
         searchQuery.name = { $regex: req.query.search, $options: "i" }; // Case-insensitive regex search
       }
+      const total = await UserModel.countDocuments(searchQuery);
+      console.log("tttt", total);
       const result = await UserModel.find(searchQuery)
         .limit(pageLimit)
         .skip(currentOffset)
         .select("-password");
+      let data = {
+        count: total,
+        result: result,
+      };
       return this.responseInterceptor.successResponse(
         req,
         res,
         200,
         "Data found",
-        result
+        data
       );
     } catch (err) {
       return this.responseInterceptor.errorResponse(
@@ -425,7 +432,7 @@ export class UserController {
 
   async activeUser(req, res) {
     try {
-      let { email } = req.body;
+      let { email, accountType } = req.body;
       let users: any = await this.userModel.findOne({ email: email });
       if (!users.email) {
         this.responseInterceptor.errorResponse(
@@ -440,7 +447,9 @@ export class UserController {
         _id: new mongoose.Types.ObjectId(users._id),
       };
       await this.userModel
-        .updateMany({ _id: query }, [{ $set: { activeStatus: true } }])
+        .updateMany({ _id: query }, [
+          { $set: { activeStatus: true, accountType: accountType } },
+        ])
         .then((data) => {
           return this.responseInterceptor.sendSuccess(
             res,
@@ -465,61 +474,10 @@ export class UserController {
     }
   }
 
-  async roleAccess(req, res) {
-    try {
-      let { accountType, email } = req.body;
-      let users: any = await this.userModel.findOne({ email: email });
-      if (!users.email) {
-        this.responseInterceptor.errorResponse(
-          res,
-          400,
-          "email is Required",
-          ""
-        );
-        return;
-      }
-      const query = {
-        _id: new mongoose.Types.ObjectId(users._id),
-      };
-      if (accountType) {
-        await this.userModel
-          .updateMany({ _id: query }, [{ $set: { accountType: accountType } }])
-          .then((data) => {
-            return this.responseInterceptor.sendSuccess(
-              res,
-              "Role is Success fully updated."
-            );
-          })
-          .catch((err) => {
-            this.responseInterceptor.errorResponse(
-              res,
-              400,
-              "db operation failed",
-              err
-            );
-          });
-      } else {
-        this.responseInterceptor.errorResponse(
-          res,
-          400,
-          "Failed to  the update role",
-          accountType
-        );
-        return;
-      }
-    } catch (err) {
-      this.responseInterceptor.errorResponse(
-        res,
-        400,
-        "Failed to remove the user",
-        err
-      );
-    }
-  }
 
   async suggestionsUser(req, res) {
     try {
-      console.log("req===>",req.user)
+      console.log("req===>", req.user);
       // const newArr = [...req.user.following, req?.user?._conditions?._id];
       // console.log("hhhhhh")
 

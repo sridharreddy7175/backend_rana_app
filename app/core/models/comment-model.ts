@@ -24,7 +24,18 @@ const CommentSchema: Schema = new Schema(
     ],
     user: { type: mongoose.Types.ObjectId, ref: "UserModel" },
     postId: mongoose.Types.ObjectId,
-    reply: [{ type: mongoose.Schema.Types.ObjectId, ref: "ReplyModel" }],
+    replies: [
+      {
+        rid: { type: mongoose.Schema.Types.ObjectId },
+        userId: { type: Schema.Types.ObjectId, ref: "UserModel" },
+        from: { type: String },
+        replyAt: { type: String },
+        comment: { type: String },
+        created_At: { type: Date, default: Date.now() },
+        updated_At: { type: Date, default: Date.now() },
+        likes: [{ type: String }],
+      },
+    ],
   },
   { timestamps: true }
 );

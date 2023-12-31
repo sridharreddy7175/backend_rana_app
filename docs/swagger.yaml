@@ -30,7 +30,6 @@ paths:
       requestBody:
         required: true
         content:
-          # multipart/form-data:
           application/json:
             schema:
               type: object
@@ -47,6 +46,9 @@ paths:
                 password:
                   type: string
                   example: "Sridhar1247@"
+                accountType:
+                  type: string
+                  example: "user"
       responses:
         "200":
           description: Registration is Success.
@@ -123,37 +125,12 @@ paths:
                 email:
                   type: string
                   example: sridhar@gmail.com
-      responses:
-        "200":
-          description: Success fully Actived.
-        "400":
-          description: User Details is Required.
-        "404":
-          description: Server error.
-        default:
-          description: Unexpected error
-  /roleaccess:
-    put:
-      tags:
-        - User API
-      post:
-      requestBody:
-        required: true
-        content:
-          # multipart/form-data:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                  example: sridhar@gmail.com
                 accountType:
                   type: string
                   example: user
       responses:
         "200":
-          description: Role is Success fully updated.
+          description: Success fully Actived.
         "400":
           description: User Details is Required.
         "404":
@@ -401,7 +378,37 @@ paths:
           "404":
             description: Server error.
           default:
-            description: Unexpected error            
+            description: Unexpected error
+  /create/post/comment:
+    post:
+      tags:
+        - Posts API
+      post:
+      requestBody:
+        required: true
+        content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                postId:
+                  type: string
+                  example: "658bfca2092f9232e6589bc9"
+                content:
+                  type: string
+                  example: "welcome"
+                tag:
+                  type: string
+                  example: "testing"
+      responses:
+        "200":
+          description: Successfully Created.
+        "400":
+          description: User Details is Required.
+        "404":
+          description: Server error.
+        default:
+          description: Unexpected error
   /create/movie:
     post:
       tags:
@@ -434,13 +441,13 @@ paths:
                   example: "2023-05-25"
                 genres:
                   type: array
-                  example: ['comedy','action']
+                  example: ["comedy", "action"]
                 tags:
                   type: array
-                  example: ['#films','#action']
+                  example: ["#films", "#action"]
                 cast:
                   type: array
-                  example: ['Rana','JrNtr']
+                  example: ["Rana", "JrNtr"]
                 trailer:
                   type: string
                   example: "https://www.youtube.com/watch?v=dhMlXoTD3mQ"
@@ -449,7 +456,7 @@ paths:
                   example: "8.6"
                 language:
                   type: array
-                  example: ['Telugu','Hindi']
+                  example: ["Telugu", "Hindi"]
       responses:
         "200":
           description: Successfully Created.
@@ -516,3 +523,71 @@ paths:
           description: Server error.
         default:
           description: Unexpected error
+  /create/reel/comment:
+    post:
+      tags:
+        - Reels API
+      post:
+      requestBody:
+        required: true
+        content:
+           application/json:
+            schema:
+              type: object
+              properties:
+                reelId:
+                  type: string
+                  example: "658bfca2092f9232e6589bc9"
+                content:
+                  type: string
+                  example: "welcome"
+                tag:
+                  type: string
+                  example: "testing"
+      responses:
+        "200":
+          description: Successfully Created.
+        "400":
+          description: User Details is Required.
+        "404":
+          description: Server error.
+        default:
+          description: Unexpected error
+  /like/{reelId}:
+    put:
+      tags:
+        - Reels API
+    parameters:
+      - in: path
+        name: reelId
+        required: true
+        schema:
+          type: integer
+        responses:
+          "200":
+            description: Registration is Success.
+          "400":
+            description: User Details is Required.
+          "404":
+            description: Server error.
+          default:
+            description: Unexpected error
+  /unlike/{reelId}:
+    put:
+      tags:
+        - Reels API
+    parameters:
+      - in: path
+        name: reelId
+        required: true
+        schema:
+          type: integer
+        responses:
+          "200":
+            description: Registration is Success.
+          "400":
+            description: User Details is Required.
+          "404":
+            description: Server error.
+          default:
+            description: Unexpected error

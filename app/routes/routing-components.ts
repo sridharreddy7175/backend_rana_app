@@ -84,9 +84,7 @@ export class RoutingComponents {
     this.userController.activeUser(req, res);
 
   }
-  RoleAccess(req,res){
-    this.userController.roleAccess(req,res)
-  }
+ 
 
   // Movie Apis
   CreateMovie(req, res, next) {
