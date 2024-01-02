@@ -218,6 +218,15 @@ export class AppRoutes {
         ],
       },
       {
+        path: "/editPost",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          upload.array("photos"),
+          // this.validator.validateBodyPayload.bind(this.validator, editSchema),
+          routingComponents.EditPost.bind(routingComponents),
+        ],
+      },
+      {
         path: "/like/:postId",
         component: [
           this.authGuard.authCheck.bind(this.authGuard), //Auth Check
@@ -291,6 +300,13 @@ export class AppRoutes {
         component: [
           this.authGuard.authCheck.bind(this.authGuard), //Auth Check
           routingComponents.DeleteUser.bind(routingComponents),
+        ],
+      },
+      {
+        path: "/delete/post/:postId",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          routingComponents.DeletePost.bind(routingComponents),
         ],
       },
     ];

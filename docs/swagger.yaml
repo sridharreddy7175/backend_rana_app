@@ -163,7 +163,7 @@ paths:
             schema:
               type: object
               properties:
-                id:
+                user_id:
                   type: string
                   example: "6451cf1d52a4adebd8a56401"
                 name:
@@ -334,6 +334,56 @@ paths:
           description: Server error.
         default:
           description: Unexpected error
+  /editPost:
+    put:
+      tags:
+        - Posts API
+      post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            # application/json:
+            schema:
+              type: object
+              properties:
+                post_id:
+                  type: string
+                  example: "6451cf1d52a4adebd8a56401"
+                story:
+                  type: file
+                  example: "sridhar"
+                share:
+                  type: string
+                  example: "9491908107"
+      responses:
+        "200":
+          description: Registration is Success.
+        "400":
+          description: User Details is Required.
+        "404":
+          description: Server error.
+        default:
+          description: Unexpected error
+  /delete/post/{postId}:
+    delete:
+      tags:
+        - Posts API
+    parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: integer
+        responses:
+          "200":
+            description: Post Removed successfully.
+          "400":
+            description: User Details is Required.
+          "404":
+            description: Server error.
+          default:
+            description: Unexpected error
   /allmyposts:
     get:
       tags:

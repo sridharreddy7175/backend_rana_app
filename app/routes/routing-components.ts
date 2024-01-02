@@ -150,6 +150,12 @@ export class RoutingComponents {
  ReplyPostComment(req,res){
   this.commentsController.replyPostComment(req,res)
  }
+ EditPost(req,res){
+  this.postController.editPost(req,res)
+ }
+ DeletePost(req,res){
+  this.postController.deletePost(req,res)
+ }
 
  // Events Apis
  CreateEvent(req,res){

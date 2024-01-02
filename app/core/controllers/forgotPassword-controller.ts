@@ -62,19 +62,6 @@ export class ForgotPasswordController {
       );
     }
   }
-
-  async PwdResetLink(req, res) {
-    const { token } = req.params;
-    try {
-    } catch (err) {
-      return this.responseInterceptor.errorResponse(
-        res,
-        500,
-        "Something went wrong",
-        err
-      );
-    }
-  }
   async resetPassword(req, res) {
     const { token } = req.params;
     try {

@@ -249,4 +249,101 @@ export class PostController {
       return;
     }
   }
+  async editPost(req,res){
+    try{
+      const { post_id, story, share } = req.body
+      if (req.body.post_id) {
+        //checking the existance user
+        let post = await this.postModel.findOne({
+          _id: post_id,
+        });
+        if (!post) {
+          return this.responseInterceptor.errorResponse(
+            res,
+            400,
+            "post does not exists"
+          );
+        }
+        const query = {
+          _id: new mongoose.Types.ObjectId(post_id),
+        };
+        let photosData = req.files.map((data: any) => {
+          return data?.originalname;
+        });
+        let postData={
+          story:story,
+          photos:photosData,
+          share:share
+        }
+        this.postModel
+          .updateOne(query, postData)
+          .then((data) => {
+            return this.responseInterceptor.sendSuccess(
+              res,
+              "Success fully updated."
+            );
+          })
+          .catch((err) => {
+            this.responseInterceptor.errorResponse(
+              res,
+              400,
+              "db operation failed",
+              err
+            );
+          });
+      } else {
+        return this.responseInterceptor.errorResponse(
+          res,
+          400,
+          "Bad Request",
+          ""
+        );
+      }
+    }
+    catch (err) {
+      this.responseInterceptor.errorResponse(
+        res,
+        400,
+        "Failed to remove the Post",
+        err
+      );
+      return;
+    }
+  }
+  async deletePost(req,res){
+    try{
+      const deletePostData = req.params.postId;
+      if (!deletePostData) {
+        this.responseInterceptor.errorResponse(res, 400, "postId is Required", "");
+        return;
+      }
+      const deleteObject = {
+        _id: new mongoose.Types.ObjectId(deletePostData),
+      };
+      const response = await this.postModel.deleteOne(deleteObject);
+      if (response) {
+        return this.responseInterceptor.sendSuccess(
+          res,
+          "Post Removed successfully"
+        );
+      } else {
+        this.responseInterceptor.errorResponse(
+          res,
+          400,
+          "Failed to remove the post",
+          response
+        );
+        return;
+      }
+    }
+    catch(err){
+      this.responseInterceptor.errorResponse(
+        res,
+        400,
+        "Failed to remove the Post",
+        err
+      );
+      return
+    }
+  }
 }
