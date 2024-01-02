@@ -1,7 +1,7 @@
 import { RoutingComponents } from "./routing-components";
 import { AuthGuard } from "../core/utillities/auth-gaurd/auth-gaurd";
 import { Validator } from "../core/utillities/validator/validator";
-import { userSchema } from "./payload_schems/user-schemas";
+import { editSchema, userSchema } from "./payload_schems/user-schemas";
 import * as multer from "multer";
 import { storage } from "../core/utillities/imageupload";
 
@@ -185,6 +185,13 @@ export class AppRoutes {
           routingComponents.CreateComment.bind(routingComponents),
         ],
       },
+      {
+        path: "/reply/post/comment",
+        component: [
+          this.authGuard.authCheck.bind(this.authGuard),
+          routingComponents.ReplyPostComment.bind(routingComponents),
+        ],
+      },
 
       // Create Event
       {
@@ -205,6 +212,8 @@ export class AppRoutes {
         path: "/updateUser",
         component: [
           this.authGuard.authCheck.bind(this.authGuard), //Auth Check
+          upload.single("profileUrl"),
+          this.validator.validateBodyPayload.bind(this.validator, editSchema),
           routingComponents.UpdateUser.bind(routingComponents),
         ],
       },

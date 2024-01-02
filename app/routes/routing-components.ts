@@ -147,6 +147,9 @@ export class RoutingComponents {
   this.commentsController.unlikeComment(req,res)
 
  }
+ ReplyPostComment(req,res){
+  this.commentsController.replyPostComment(req,res)
+ }
 
  // Events Apis
  CreateEvent(req,res){

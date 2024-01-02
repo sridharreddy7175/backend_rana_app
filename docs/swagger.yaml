@@ -124,10 +124,10 @@ paths:
               properties:
                 email:
                   type: string
-                  example: sridhar@gmail.com
+                  example: "sridhar@gmail.com"
                 accountType:
                   type: string
-                  example: user
+                  example: "user"
       responses:
         "200":
           description: Success fully Actived.
@@ -158,8 +158,8 @@ paths:
       requestBody:
         required: true
         content:
-          # multipart/form-data:
-          application/json:
+          multipart/form-data:
+            # application/json:
             schema:
               type: object
               properties:
@@ -168,7 +168,13 @@ paths:
                   example: "6451cf1d52a4adebd8a56401"
                 name:
                   type: string
-                  example: sridhar
+                  example: "sridhar"
+                phone:
+                  type: string
+                  example: "9491908107"
+                profileUrl:
+                  type: file
+                  example: "https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png"
       responses:
         "200":
           description: Registration is Success.
@@ -315,7 +321,7 @@ paths:
                   example: "sridhar"
                 photos:
                   type: file
-                  example: "9491908107"
+                  example: "https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png"
                 share:
                   type: string
                   example: "sridhar@gmail.com"
@@ -387,7 +393,7 @@ paths:
       requestBody:
         required: true
         content:
-           application/json:
+          application/json:
             schema:
               type: object
               properties:
@@ -398,6 +404,39 @@ paths:
                   type: string
                   example: "welcome"
                 tag:
+                  type: string
+                  example: "testing"
+      responses:
+        "200":
+          description: Successfully Created.
+        "400":
+          description: User Details is Required.
+        "404":
+          description: Server error.
+        default:
+          description: Unexpected error
+  /reply/post/comment:
+    post:
+      tags:
+        - Posts API
+      post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                commentId:
+                  type: string
+                  example: "658bfca2092f9232e6589bc9"
+                comment:
+                  type: string
+                  example: "welcome"
+                from:
+                  type: string
+                  example: "testing"
+                replyAt:
                   type: string
                   example: "testing"
       responses:
@@ -531,7 +570,7 @@ paths:
       requestBody:
         required: true
         content:
-           application/json:
+          application/json:
             schema:
               type: object
               properties:

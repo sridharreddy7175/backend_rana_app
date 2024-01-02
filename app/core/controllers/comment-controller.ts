@@ -42,10 +42,14 @@ export class CommentsController {
         postId: postId,
       });
 
-      await this.postModel.findOneAndUpdate({_id: postId}, {
-        $push: {comments: newComment._id}
-    }, {new: true})
-    await newComment.save()
+      await this.postModel.findOneAndUpdate(
+        { _id: postId },
+        {
+          $push: { comments: newComment._id },
+        },
+        { new: true }
+      );
+      await newComment.save();
       return this.responseInterceptor.successResponse(
         req,
         res,
@@ -118,8 +122,8 @@ export class CommentsController {
     }
   }
 
-  async likeComment(req,res){
-    try{
+  async likeComment(req, res) {
+    try {
       const myCommentData = req.params.commentId;
       const loginUserId = req?.user?._conditions?._id;
       const comment: any = await this.commentModel.findById(myCommentData);
@@ -145,8 +149,7 @@ export class CommentsController {
         "Data found",
         comment
       );
-    }
-    catch(err){
+    } catch (err) {
       return this.responseInterceptor.errorResponse(
         res,
         400,
@@ -155,7 +158,6 @@ export class CommentsController {
       );
     }
   }
-
 
   async unlikeComment(req, res) {
     try {
@@ -214,5 +216,57 @@ export class CommentsController {
     }
   }
 
-}
+  async replyPostComment(req, res) {
+    try {
+      const { comment, replyAt, from,commentId } = req.body;
+      const loginUserId = req?.user?._conditions?._id;
+      if (comment === null) {
+        return this.responseInterceptor.errorResponse(
+          res,
+          400,
+          "Comment is required."
+        );
+      }
+      const commentInfo = await this.commentModel.findById(commentId);
+      commentInfo.replies.push({
+        userId: loginUserId,
+        comment: comment,
+        replyAt: replyAt,
+        from: from,
+        created_At: Date.now(),
+      });
+      commentInfo.save();
+      return this.responseInterceptor.successResponse(
+        req,
+        res,
+        null,
+        "Data found",
+        commentInfo
+      );
 
+    } catch (err) {
+      this.responseInterceptor.errorResponse(
+        res,
+        400,
+        "Failed to remove the Comment",
+        err
+      );
+      return;
+    }
+  }
+  async replyPostCommentLike(req,res){
+    try{
+      const myReplyData = req.params.replyId;
+      const loginUserId = req?.user?._conditions?._id;
+    }
+    catch(err){
+      this.responseInterceptor.errorResponse(
+        res,
+        400,
+        "Failed to remove the Comment",
+        err
+      );
+      return;
+    }
+  }
+}

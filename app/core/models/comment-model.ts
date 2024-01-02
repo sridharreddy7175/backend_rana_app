@@ -8,6 +8,7 @@ interface IComments extends Document {
   likes: any;
   postId: any;
   user: any;
+  replies:any;
 }
 
 const CommentSchema: Schema = new Schema(
@@ -33,7 +34,11 @@ const CommentSchema: Schema = new Schema(
         comment: { type: String },
         created_At: { type: Date, default: Date.now() },
         updated_At: { type: Date, default: Date.now() },
-        likes: [{ type: String }],
+        likes: [
+          {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" },
+          },
+        ],
       },
     ],
   },

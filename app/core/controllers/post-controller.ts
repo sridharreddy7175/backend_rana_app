@@ -27,8 +27,6 @@ export class PostController {
       let photosData = req.files.map((data: any) => {
         return data?.originalname;
       });
-      console.log("photosData", photosData);
-
       // save db
       let savedPosts = new this.postModel({
         user: loginUserId,
@@ -98,6 +96,11 @@ export class PostController {
         .find(query)
         .sort("-createdAt")
         .populate({
+          path: "user",
+          model: "UserModel",
+          select: "name email",
+        })
+        .populate({
           path: "comments",
           model: "CommentModel",
         });
@@ -127,10 +130,6 @@ export class PostController {
         _id: new mongoose.Types.ObjectId(myPostData),
       };
       const post: any = await this.postModel.findById(PostObject);
-      // console.log("posyttt",post)
-      // if (!post) {
-      // }
-      // check if the user has already been liked
       if (
         post?.likes?.filter(
           (like) => like.user.toString() === loginUserId.toString()

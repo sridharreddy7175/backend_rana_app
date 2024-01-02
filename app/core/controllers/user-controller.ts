@@ -146,6 +146,7 @@ export class UserController {
               email: userCredentials.email,
               phone: userCredentials.phone,
               accountType: userCredentials.accountType,
+              profileUrl:userCredentials.profileUrl,
               token: token,
             };
             return this.responseInterceptor.successResponse(
@@ -226,11 +227,11 @@ export class UserController {
 
   async updateUser(req, res) {
     try {
-      let userData = req.body;
-      if (req.body._id) {
+      const { user_id, name, mobile } = req.body
+      if (req.body.user_id) {
         //checking the existance user
         let userCredentials = await this.userModel.findOne({
-          _id: userData._id,
+          _id: user_id,
         });
         if (!userCredentials) {
           return this.responseInterceptor.errorResponse(
@@ -240,8 +241,13 @@ export class UserController {
           );
         }
         const query = {
-          _id: new mongoose.Types.ObjectId(userData._id),
+          _id: new mongoose.Types.ObjectId(user_id),
         };
+        let userData={
+          name:name,
+          profileUrl:req.file.originalname,
+          mobile:mobile
+        }
         this.userModel
           .updateOne(query, userData)
           .then((data) => {
@@ -267,6 +273,7 @@ export class UserController {
         );
       }
     } catch (err) {
+      console.log("error",err)
       return this.responseInterceptor.errorResponse(
         res,
         500,
@@ -294,6 +301,7 @@ export class UserController {
         email: users.email,
         phone: users.phone,
         accountType: users.accountType,
+        profileUrl:users.profileUrl
       };
       return this.responseInterceptor.successResponse(
         req,

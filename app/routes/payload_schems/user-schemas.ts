@@ -8,3 +8,10 @@ export const userSchema=Joi.object({
     role:Joi.string().trim(),
     accountType:Joi.string().trim()
 })
+
+export const editSchema=Joi.object({
+    user_id:Joi.string().trim().required(),
+    name: Joi.string().trim().regex(/^([a-zA-Z0-9]+\s)*[a-zA-Z0-9]+$/),
+    phone:Joi.string().trim().regex( /^[5-9]\d{9}$/),
+    profileUrl:Joi.string().trim()
+})

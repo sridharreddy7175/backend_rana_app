@@ -10,6 +10,7 @@ interface IUser extends Document {
   phone: string;
   isFollowing: string;
   isUnFollowing: string;
+  profileUrl:string;
 }
 
 const userSchema: Schema = new Schema(
@@ -33,7 +34,6 @@ const userSchema: Schema = new Schema(
       default: "user",
       enum: ["admin", "user"],
     },
-    profileUrl: { type: String },
     activeStatus: {
       type: Boolean,
       default: false,
@@ -50,20 +50,12 @@ const userSchema: Schema = new Schema(
       type: Boolean,
       default: false,
     },
+    profileUrl:{
+      type: String,
+      default: 'https://res.cloudinary.com/devatchannel/image/upload/v1602752402/avatar/avatar_cugq40.png'
+  },
     followers: [{ type: ObjectId, ref: "UserModel" }],
     following: [{ type: ObjectId, ref: "UserModel" }],
-    // tokens: [
-    //   {
-    //     token: {
-    //       type: String,
-    //       required: true,
-    //     },
-    //   },
-    // ],
-
-    // verifytoken: {
-    //   type: String,
-    // },
   },
   { timestamps: true }
 );
